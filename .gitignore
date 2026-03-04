@@ -21,9 +21,15 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # Env files
+# .env.dev  → committed (safe dev defaults, no secrets)
+# .env.prod → gitignored (real secrets, lives only on VPS)
 .env
 .env.*
 !.env.example
+!.env.dev
+
+# Certbot / SSL (managed by Docker volumes, not tracked in git)
+nginx/certbot/
 
 # OS
 .DS_Store

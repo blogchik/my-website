@@ -1,0 +1,29 @@
+# docker-compose.override.yml — Development overrides (auto-loaded)
+#
+# Docker Compose automatically merges this file when you run:
+#   docker compose up          (or: make dev)
+#
+# Features:
+#   - Hot reload via pnpm dev
+#   - Source code bind-mounted into the container
+#   - node_modules isolated inside the container (prevents host/container conflicts)
+#   - WATCHPACK_POLLING=true for reliable file watching on Linux bind mounts
+
+services:
+  frontend:
+    build:
+      target: development
+    command: pnpm dev
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      # Anonymous volume keeps container's node_modules intact,
+      # preventing host node_modules from shadowing it
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.dev
+    environment:
+      - WATCHPACK_POLLING=true
+    restart: "no"
