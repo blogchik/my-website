@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-@theme {
-  --font-heading: "Gatuzo", var(--font-montserrat), sans-serif;
-  --font-body: var(--font-montserrat), sans-serif;
-}
