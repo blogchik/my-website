@@ -15,11 +15,11 @@ services:
       target: development
     command: pnpm dev
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
-      # Anonymous volume keeps container's node_modules intact,
-      # preventing host node_modules from shadowing it
+      # Mount entire frontend directory (includes tsconfig.json, next.config.ts, etc.)
+      - ./frontend:/app
+      # Anonymous volumes keep these container-only (prevent host files from overriding)
       - /app/node_modules
+      - /app/.next
     ports:
       - "3000:3000"
     env_file:
