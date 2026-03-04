@@ -11,12 +11,54 @@ const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-mono",
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  title: "J. Abduroziq — Designing The Next Internet",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "J. Abduroziq — Designing The Next Internet",
+    template: "%s — J. Abduroziq",
+  },
   description:
-    "Personal website of Jabborov Abduroziq. Think Beyond Limits.",
+    "Personal website of Jabborov Abduroziq — developer & designer passionate about building meaningful digital experiences. Think Beyond Limits.",
+  keywords: [
+    "Jabborov Abduroziq",
+    "web developer",
+    "designer",
+    "Next.js",
+    "React",
+    "TypeScript",
+    "UI/UX",
+  ],
+  authors: [{ name: "Jabborov Abduroziq", url: siteUrl }],
+  creator: "Jabborov Abduroziq",
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "J. Abduroziq",
+    title: "J. Abduroziq — Designing The Next Internet",
+    description:
+      "Personal website of Jabborov Abduroziq — developer & designer passionate about building meaningful digital experiences.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@jabborovstwit",
+    creator: "@jabborovstwit",
+    title: "J. Abduroziq — Designing The Next Internet",
+    description:
+      "Personal website of Jabborov Abduroziq — developer & designer passionate about building meaningful digital experiences.",
+  },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 
