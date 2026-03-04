@@ -134,3 +134,7 @@ jobs:
           platforms: linux/amd64
           build-args: |
             NEXT_PUBLIC_SITE_URL=${{ env.NEXT_PUBLIC_SITE_URL }}
+
+      - name: Trigger Dokploy deployment
+        if: github.ref == 'refs/heads/main'
+        run: curl -s -X POST "${{ secrets.DOKPLOY_WEBHOOK_URL }}"
