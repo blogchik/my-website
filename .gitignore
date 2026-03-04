@@ -1,5 +1,11 @@
-# dependencies
-node_modules/
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# Yarn
 .pnp
 .pnp.*
 .yarn/*
@@ -8,39 +14,27 @@ node_modules/
 !.yarn/releases
 !.yarn/versions
 
-# next.js
-.next/
-out/
-
-# production
-build/
-dist/
-
-# debug
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# Env files
 .env
 .env.*
 !.env.example
 
-# os
+# OS
 .DS_Store
 Thumbs.db
 
-# ide
+# IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# misc
+# Misc
 *.pem
 .vercel
