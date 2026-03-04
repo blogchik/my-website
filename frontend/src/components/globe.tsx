@@ -51,22 +51,52 @@ export function Globe() {
   const globeRef = useRef<ReturnType<typeof createGlobe> | null>(null);
   const pulsingMarkersRef = useRef(createPulsingMarkers());
   const phiRef = useRef(0);
+  const renderSizeRef = useRef({ width: 0, height: 0, dpr: 1 });
+
+  const syncCanvasSize = useCallback(() => {
+    if (!canvasRef.current) {
+      return { hasSize: false, dprChanged: false };
+    }
+
+    const cssWidth = canvasRef.current.offsetWidth;
+    const cssHeight = canvasRef.current.offsetHeight;
+
+    if (cssWidth === 0 || cssHeight === 0) {
+      return { hasSize: false, dprChanged: false };
+    }
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const width = Math.round(cssWidth * dpr);
+    const height = Math.round(cssHeight * dpr);
+    const dprChanged = renderSizeRef.current.dpr !== dpr;
+
+    if (canvasRef.current.width !== width) {
+      canvasRef.current.width = width;
+    }
+    if (canvasRef.current.height !== height) {
+      canvasRef.current.height = height;
+    }
+
+    renderSizeRef.current = { width, height, dpr };
+
+    return { hasSize: true, dprChanged };
+  }, []);
 
   const initGlobe = useCallback(() => {
     if (!canvasRef.current) return;
+    const { hasSize } = syncCanvasSize();
+    if (!hasSize) return;
 
     if (globeRef.current) {
       globeRef.current.destroy();
     }
 
-    const width = canvasRef.current.offsetWidth;
-    const height = canvasRef.current.offsetHeight;
-    const dpr = Math.min(window.devicePixelRatio, 1.5);
+    const { width, height, dpr } = renderSizeRef.current;
 
     globeRef.current = createGlobe(canvasRef.current, {
       devicePixelRatio: dpr,
-      width: width * dpr,
-      height: height * dpr,
+      width,
+      height,
       phi: phiRef.current,
       theta: 0.25,
       dark: 0,
@@ -81,6 +111,8 @@ export function Globe() {
       markers: [],
       onRender: (state) => {
         state.phi = phiRef.current;
+        state.width = renderSizeRef.current.width;
+        state.height = renderSizeRef.current.height;
         phiRef.current += 0.002;
 
         const markers = pulsingMarkersRef.current;
@@ -107,24 +139,21 @@ export function Globe() {
           }));
       },
     });
-  }, []);
+  }, [syncCanvasSize]);
 
   useEffect(() => {
     initGlobe();
 
-    // Resize: update canvas dimensions without full destroy/recreate
-    let resizeTimer: ReturnType<typeof setTimeout>;
+    let resizeFrame = 0;
     const observer = new ResizeObserver(() => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        if (!canvasRef.current || !globeRef.current) return;
-        const width = canvasRef.current.offsetWidth;
-        const height = canvasRef.current.offsetHeight;
-        if (width === 0 || height === 0) return;
-        const dpr = Math.min(window.devicePixelRatio, 1.5);
-        canvasRef.current.width = width * dpr;
-        canvasRef.current.height = height * dpr;
-      }, 300);
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        const { hasSize, dprChanged } = syncCanvasSize();
+        if (!hasSize || !globeRef.current) return;
+        if (dprChanged) {
+          initGlobe();
+        }
+      });
     });
 
     if (canvasRef.current) {
@@ -145,20 +174,19 @@ export function Globe() {
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
-      clearTimeout(resizeTimer);
+      cancelAnimationFrame(resizeFrame);
       observer.disconnect();
       document.removeEventListener("visibilitychange", onVisibilityChange);
       if (globeRef.current) {
         globeRef.current.destroy();
       }
     };
-  }, [initGlobe]);
+  }, [initGlobe, syncCanvasSize]);
 
   return (
     <canvas
       ref={canvasRef}
       className="w-full h-full"
-      style={{ contain: "layout paint size", aspectRatio: "1" }}
     />
   );
 }
