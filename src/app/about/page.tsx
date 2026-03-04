@@ -8,16 +8,34 @@ export const metadata: Metadata = {
 };
 
 const skills = [
+  // Frontend
   "Next.js",
   "React",
   "TypeScript",
   "Tailwind CSS",
+  // Backend
   "Node.js",
   "Python",
-  "Docker",
+  "PHP",
+  "Laravel",
+  "Livewire",
+  "MySQL",
   "PostgreSQL",
+  "Redis",
+  // DevOps
+  "Docker",
+  "Nginx",
+  "CI/CD",
+  "Linux",
   "Git",
+  // Graphic Design
   "Figma",
+  "Adobe Illustrator",
+  "Adobe Photoshop",
+  // Motion Design
+  "Adobe After Effects",
+  "Framer Motion",
+  "GSAP",
 ];
 
 export default function AboutPage() {

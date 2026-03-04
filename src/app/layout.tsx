@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: "J. Abduroziq — Designing The Next Internet",
   description:
     "Personal website of Jabborov Abduroziq. Think Beyond Limits.",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({
