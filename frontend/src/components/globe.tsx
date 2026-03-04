@@ -112,12 +112,18 @@ export function Globe() {
   useEffect(() => {
     initGlobe();
 
-    // Debounced resize — avoid destroying/recreating globe on every pixel
+    // Resize: update canvas dimensions without full destroy/recreate
     let resizeTimer: ReturnType<typeof setTimeout>;
     const observer = new ResizeObserver(() => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        initGlobe();
+        if (!canvasRef.current || !globeRef.current) return;
+        const width = canvasRef.current.offsetWidth;
+        const height = canvasRef.current.offsetHeight;
+        if (width === 0 || height === 0) return;
+        const dpr = Math.min(window.devicePixelRatio, 1.5);
+        canvasRef.current.width = width * dpr;
+        canvasRef.current.height = height * dpr;
       }, 300);
     });
 

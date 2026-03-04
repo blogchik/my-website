@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoSymbol } from "@/components/icons/logo-symbol";
@@ -23,31 +23,40 @@ export function NavigationMenu({ open, onClose }: NavigationMenuProps) {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [animateItems, setAnimateItems] = useState(false);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
+  // Manage body overflow and entrance animations
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-      // Trigger entrance animation
-      requestAnimationFrame(() => {
-        setVisible(true);
-        setTimeout(() => setAnimateItems(true), 200);
-      });
-    } else {
-      setAnimateItems(false);
-      setVisible(false);
-      document.body.style.overflow = "";
-    }
+    if (!open) return;
+
+    document.body.style.overflow = "hidden";
+
+    const raf = requestAnimationFrame(() => {
+      setVisible(true);
+      const t = setTimeout(() => setAnimateItems(true), 200);
+      timersRef.current.push(t);
+    });
+
     return () => {
       document.body.style.overflow = "";
+      cancelAnimationFrame(raf);
+      timersRef.current.forEach(clearTimeout);
+      timersRef.current = [];
+      setAnimateItems(false);
+      setVisible(false);
     };
   }, [open]);
 
   function handleClose() {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
     setAnimateItems(false);
-    setTimeout(() => {
+    const t1 = setTimeout(() => {
       setVisible(false);
-      setTimeout(onClose, 300);
+      const t2 = setTimeout(onClose, 300);
+      timersRef.current.push(t2);
     }, 100);
+    timersRef.current.push(t1);
   }
 
   if (!open) return null;

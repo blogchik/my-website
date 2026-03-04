@@ -53,6 +53,10 @@ Personal portfolio for Jabborov Abduroziq. Built with Next.js 16 (App Router), R
 
 `@/` maps to `frontend/src/` (configured in `frontend/tsconfig.json`).
 
+### Environment variables
+
+**Strict rule:** All env vars are managed in a single root `.env` file and passed to services via `docker-compose.yml` (`env_file: .env`). Never create `.env` files inside individual service directories. See `.env.example` at the repo root for available variables.
+
 ### Deployment
 
 `frontend/next.config.ts` sets `output: "standalone"`. Docker uses multi-stage build (Node 22 Alpine). Site URL from `NEXT_PUBLIC_SITE_URL` or `VERCEL_URL` env vars.

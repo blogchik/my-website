@@ -1,41 +1,9 @@
 import type { Metadata } from "next";
-// import { ProjectCard } from "@/components/project-card";
 
 export const metadata: Metadata = {
   title: "Projects — J. Abduroziq",
   description: "Projects and work by Jabborov Abduroziq.",
 };
-
-// const projects = [
-//   {
-//     title: "Project Alpha",
-//     description:
-//       "A modern web application built with cutting-edge technologies for seamless user experience.",
-//     tags: ["Next.js", "TypeScript", "Tailwind"],
-//     href: "#",
-//   },
-//   {
-//     title: "Project Beta",
-//     description:
-//       "An open-source tool designed to simplify developer workflows and boost productivity.",
-//     tags: ["React", "Node.js", "PostgreSQL"],
-//     href: "#",
-//   },
-//   {
-//     title: "Project Gamma",
-//     description:
-//       "A design system and component library for building consistent, accessible interfaces.",
-//     tags: ["Figma", "React", "Storybook"],
-//     href: "#",
-//   },
-//   {
-//     title: "Project Delta",
-//     description:
-//       "A high-performance API service with real-time data processing capabilities.",
-//     tags: ["Python", "Docker", "Redis"],
-//     href: "#",
-//   },
-// ];
 
 export default function ProjectsPage() {
   return (

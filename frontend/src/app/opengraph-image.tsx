@@ -97,7 +97,7 @@ export default function OGImage() {
               letterSpacing: "0.5px",
             }}
           >
-            jabborovabduroziq.com
+            {process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, "") ?? "jabborovabduroziq.com"}
           </div>
         </div>
 

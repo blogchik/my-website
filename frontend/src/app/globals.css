@@ -67,30 +67,15 @@
   display: none;
 }
 
-/* Custom cursor */
-@keyframes cursor-pulse {
-
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-
-  50% {
-    transform: translate(-50%, -50%) scale(1.5);
-    opacity: 0.6;
-  }
-}
-
+/* Custom cursor — only hide native cursor when JS has loaded */
 body {
   background-color: var(--color-white);
   color: var(--color-navy);
   font-family: var(--font-mono);
-  cursor: none;
 }
 
-/* Hide cursor on all elements */
-* {
+.custom-cursor-active,
+.custom-cursor-active * {
   cursor: none !important;
 }
 
