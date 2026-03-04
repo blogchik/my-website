@@ -70,9 +70,9 @@ export function Globe() {
       phi: phiRef.current,
       theta: 0.25,
       dark: 0,
-      diffuse: 1.2,
+      diffuse: 0.8,
       mapSamples: 16000,
-      mapBrightness: 6,
+      mapBrightness: 3,
       baseColor: [1, 1, 1],
       markerColor: [0.886, 0.518, 0.075], // #E28413
       glowColor: [1, 1, 1],

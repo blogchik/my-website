@@ -7,7 +7,7 @@ export default function HomePage() {
     <section className="relative min-h-screen flex flex-col justify-end px-6 lg:px-16 pb-12 pt-24">
       {/* Globe — background, fills viewport */}
       <div className="absolute inset-0 flex items-end justify-center overflow-hidden pointer-events-none">
-        <div className="w-[120vmin] h-[120vmin] md:w-[95vw] md:h-[95vw] md:translate-y-[45%] animate-fade-in">
+        <div className="w-[120vmin] h-[120vmin] md:w-[95vw] md:h-[95vw] md:translate-y-[45%] animate-fade-in opacity-40">
           <Globe />
         </div>
       </div>
