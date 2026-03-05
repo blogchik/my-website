@@ -324,19 +324,19 @@ jobs:
 
       - name: Wait for backend to be healthy
         run: |
-          echo "Waiting for backend to stabilize..."
-          sleep 30
-          for i in $(seq 1 24); do
+          echo "Waiting for backend to stabilize (image pull + migration + start)..."
+          sleep 60
+          for i in $(seq 1 30); do
             if curl -sf https://api.abduroziq.uz/health > /dev/null; then
               echo "Backend healthy after attempt $i"
               break
             fi
-            if [ "$i" -eq 24 ]; then
+            if [ "$i" -eq 30 ]; then
               echo "Backend did not become healthy in time"
               exit 1
             fi
-            echo "Attempt $i failed, retrying in 10s..."
-            sleep 10
+            echo "Attempt $i failed, retrying in 15s..."
+            sleep 15
           done
 
       - name: Trigger Frontend deployment
