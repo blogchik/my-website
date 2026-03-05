@@ -12,7 +12,7 @@ Personal portfolio website with a FastAPI backend — monorepo managed with Dock
 |-------|------------|
 | Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS v4 |
 | Backend | Python 3.12, FastAPI, SQLAlchemy (async), Alembic |
-| Database | PostgreSQL 16 |
+| Database | PostgreSQL 18 |
 | Email | Resend |
 | Container | Docker, Docker Compose |
 | Reverse proxy | Nginx + Let's Encrypt (self-hosted) / Traefik (Dokploy) |
@@ -169,4 +169,4 @@ make prod
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+Apache 2.0 — see [LICENSE](LICENSE)

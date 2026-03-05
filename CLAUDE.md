@@ -230,7 +230,7 @@ All endpoints are served from `api.abduroziq.uz` (production) or `localhost:4000
 
 ### Database
 
-PostgreSQL 16, accessed via async SQLAlchemy + asyncpg driver. Alembic manages schema migrations.
+PostgreSQL 18, accessed via async SQLAlchemy + asyncpg driver. Alembic manages schema migrations.
 
 ### Deployment
 

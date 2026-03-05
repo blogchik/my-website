@@ -39,7 +39,7 @@ services:
       start_period: 15s
 
   db:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     networks:
       - app-network
     volumes:
