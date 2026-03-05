@@ -29,8 +29,9 @@ export default function LoginPage() {
       <div className="animate-fade-up text-center space-y-8">
         <div>
           <h1 className="text-2xl font-bold tracking-wider">
-            <span className="text-orange">admin</span>
-            <span className="text-white/60">_panel</span>
+            <span className="text-white/90">Welcome to </span>
+            <span className="text-orange">Pilot&apos;s Cabin</span>
+            <span className="text-white/90">!</span>
           </h1>
           <p className="text-white/30 text-sm mt-2">abduroziq.uz</p>
         </div>
