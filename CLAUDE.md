@@ -267,6 +267,7 @@ Each tool page consists of **common sections** (present on every tool) plus **to
 | Hash Generator | `hash-generator` | Generators |
 | JSON Formatter | `json-formatter` | Text Processing |
 | Base64 Encoder / Decoder | `base64` | Text Processing |
+| JSON ↔ YAML Converter | `json-yaml` | Text Processing |
 
 ### Files
 
@@ -291,6 +292,9 @@ frontend/src/
     └── base64/
         ├── page.tsx                      ← /tools/base64 (metadata + layout)
         └── base64-playground.tsx         ← interactive client component (encode/decode, switch, copy)
+    └── json-yaml/
+        ├── page.tsx                      ← /tools/json-yaml (metadata + layout)
+        └── yaml-playground.tsx           ← interactive client component (js-yaml, direction, indent, sort)
 ```
 
 ## Backend architecture

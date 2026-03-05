@@ -180,6 +180,60 @@ export const tools: Tool[] = [
       ],
     },
   },
+  {
+    slug: "character-counter",
+    name: "Character Counter",
+    description:
+      "Count characters, words, sentences, lines, and bytes. Reading time, frequency analysis — all in real time.",
+    icon: "🔢",
+    category: "Text Processing",
+    banner: null,
+    seo: {
+      title: "Character Counter — Count Words, Characters & More Online",
+      description:
+        "Free online character and word counter. Get instant counts of characters, words, sentences, paragraphs, lines, and UTF-8 byte size. Includes reading time estimate and top word frequency analysis.",
+      keywords: [
+        "character counter",
+        "word counter",
+        "character count online",
+        "word count tool",
+        "letter counter",
+        "text stats",
+        "count words online",
+        "reading time calculator",
+        "sentence counter",
+        "paragraph counter",
+        "text analyzer",
+        "byte counter",
+      ],
+    },
+  },
+  {
+    slug: "json-yaml",
+    name: "JSON ↔ YAML Converter",
+    description:
+      "Convert JSON to YAML or YAML to JSON instantly. Custom indentation, sort keys, and one-click copy.",
+    icon: "⇄",
+    category: "Text Processing",
+    banner: null,
+    seo: {
+      title: "JSON ↔ YAML Converter — Convert JSON to YAML Online Free",
+      description:
+        "Free online JSON to YAML and YAML to JSON converter. Paste your data, choose direction, adjust indentation and sort keys alphabetically. Instant browser-side conversion — no data sent to servers.",
+      keywords: [
+        "json to yaml",
+        "yaml to json",
+        "json yaml converter",
+        "convert json to yaml online",
+        "convert yaml to json online",
+        "json yaml online tool",
+        "yaml formatter",
+        "json formatter",
+        "yaml converter free",
+        "json to yaml online free",
+      ],
+    },
+  },
 ];
 
 /** Return tools grouped by category (preserves category declaration order). */
