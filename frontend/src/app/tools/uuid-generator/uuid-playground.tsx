@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 /* ---------- types ---------- */
 type UuidFormat = "standard" | "uppercase" | "no-dashes" | "braces" | "urn";
@@ -176,12 +176,7 @@ export function UuidPlayground() {
   const [results, setResults] = useState<string[]>([]);
   const [copied, setCopied] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
-
-  // Load history from cookie on mount
-  useEffect(() => {
-    setHistory(readHistory());
-  }, []);
+  const [history, setHistory] = useState<HistoryEntry[]>(() => readHistory());
 
   const generate = useCallback(() => {
     const uuids = Array.from({ length: count }, () =>

@@ -211,11 +211,9 @@ export function HashPlayground() {
   const [result, setResult]     = useState("");
   const [computing, setComputing] = useState(false);
   const [copied, setCopied]     = useState(false);
-  const [history, setHistory]   = useState<HistoryEntry[]>([]);
+  const [history, setHistory]   = useState<HistoryEntry[]>(() => readHistory());
   const [spinning, setSpinning] = useState(false);
   const debounceRef             = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => { setHistory(readHistory()); }, []);
 
   // Auto-compute on input / algorithm / format change (debounced 200ms)
   useEffect(() => {
