@@ -43,6 +43,14 @@ export const metadata: Metadata = {
     title: "J. Abduroziq — Designing The Next Internet",
     description:
       "Personal website of Jabborov Abduroziq — developer & designer passionate about building meaningful digital experiences.",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "J. Abduroziq — Designing The Next Internet",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -51,6 +59,14 @@ export const metadata: Metadata = {
     title: "J. Abduroziq — Designing The Next Internet",
     description:
       "Personal website of Jabborov Abduroziq — developer & designer passionate about building meaningful digital experiences.",
+    images: [
+      {
+        url: "/twitter-image",
+        width: 1200,
+        height: 630,
+        alt: "J. Abduroziq — Designing The Next Internet",
+      },
+    ],
   },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
