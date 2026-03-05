@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /* ---------- types ---------- */
 interface CharTypes {
@@ -198,8 +198,13 @@ export function PasswordPlayground() {
   });
   const [password, setPassword] = useState("");
   const [copied, setCopied] = useState(false);
-  const [history, setHistory] = useState<HistoryEntry[]>(() => readHistory());
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [spinning, setSpinning] = useState(false);
+
+  // Load history from cookie only on client to avoid SSR/client mismatch
+  useEffect(() => {
+    setHistory(readHistory());
+  }, []);
 
   const atLeastOne = Object.values(types).some(Boolean);
   const entropy = password ? calcEntropy(length, types) : 0;

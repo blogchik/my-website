@@ -84,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${ibmPlexMono.variable} font-mono antialiased`}>
         <CustomCursor />
         <Header />
