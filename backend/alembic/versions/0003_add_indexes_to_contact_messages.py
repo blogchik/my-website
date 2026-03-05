@@ -18,10 +18,11 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.create_index("ix_contact_messages_created_at", "contact_messages", ["created_at"])
-    op.create_index("ix_contact_messages_read_at", "contact_messages", ["read_at"])
+    # Use raw SQL to support IF NOT EXISTS (handles re-runs if index was partially created)
+    op.execute("CREATE INDEX IF NOT EXISTS ix_contact_messages_created_at ON contact_messages (created_at)")
+    op.execute("CREATE INDEX IF NOT EXISTS ix_contact_messages_read_at ON contact_messages (read_at)")
 
 
 def downgrade() -> None:
-    op.drop_index("ix_contact_messages_read_at", table_name="contact_messages")
-    op.drop_index("ix_contact_messages_created_at", table_name="contact_messages")
+    op.execute("DROP INDEX IF EXISTS ix_contact_messages_read_at")
+    op.execute("DROP INDEX IF EXISTS ix_contact_messages_created_at")
