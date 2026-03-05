@@ -95,7 +95,7 @@ export default function ContactDetailPage() {
       </div>
 
       {/* Metadata */}
-      <div className="flex gap-6 text-xs text-navy/30">
+      <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-navy/30">
         <span>received: {formatDate(message.created_at)}</span>
         {message.sent_at && (
           <span>email sent: {formatDate(message.sent_at)}</span>

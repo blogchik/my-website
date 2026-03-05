@@ -78,13 +78,13 @@ export default function ContactsPage() {
       <h1 className="text-lg font-bold">Contacts</h1>
 
       {/* Filters */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
         <input
           type="text"
           placeholder="search by name or email..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="flex-1 max-w-sm bg-navy/5 border border-navy/10 rounded-lg px-4 py-2 text-sm text-navy placeholder-navy/20 outline-none focus:border-orange/50 transition-colors"
+          className="flex-1 sm:max-w-sm bg-navy/5 border border-navy/10 rounded-lg px-4 py-2 text-sm text-navy placeholder-navy/20 outline-none focus:border-orange/50 transition-colors"
         />
         <button
           onClick={() => {
@@ -131,9 +131,9 @@ export default function ContactsPage() {
                 }`}
               >
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <span className="text-sm font-medium">{msg.name}</span>
-                    <span className="text-xs text-navy/20">{msg.email}</span>
+                    <span className="text-xs text-navy/20 hidden sm:inline">{msg.email}</span>
                     {!msg.is_read && <StatusBadge variant="unread" />}
                   </div>
                   <p className="text-xs text-navy/30 truncate mt-1">
@@ -141,7 +141,7 @@ export default function ContactsPage() {
                     {msg.message.length > 120 ? "..." : ""}
                   </p>
                 </div>
-                <span className="text-xs text-navy/20 shrink-0">
+                <span className="text-xs text-navy/20 shrink-0 hidden sm:block">
                   {formatDate(msg.created_at)}
                 </span>
               </div>
