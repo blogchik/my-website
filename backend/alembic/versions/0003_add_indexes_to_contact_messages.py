@@ -18,9 +18,15 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    # Use raw SQL to support IF NOT EXISTS (handles re-runs if index was partially created)
-    op.execute("CREATE INDEX IF NOT EXISTS ix_contact_messages_created_at ON contact_messages (created_at)")
-    op.execute("CREATE INDEX IF NOT EXISTS ix_contact_messages_read_at ON contact_messages (read_at)")
+    # Use raw SQL IF NOT EXISTS to make the migration idempotent
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_contact_messages_created_at"
+        " ON contact_messages (created_at)"
+    )
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS ix_contact_messages_read_at"
+        " ON contact_messages (read_at)"
+    )
 
 
 def downgrade() -> None:
