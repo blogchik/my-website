@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Admin — abduroziq.uz",
   description: "Admin panel",
   robots: { index: false, follow: false },
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({
