@@ -32,14 +32,22 @@ export default function ContactDetailPage() {
   const router = useRouter();
   const [message, setMessage] = useState<ContactMessage | null>(null);
   const [loading, setLoading] = useState(true);
-  const [toggling, setToggling] = useState(false);
 
   useEffect(() => {
     const fetchMessage = async () => {
       try {
         const res = await apiFetch(`/admin/contacts/${params.id}`);
         if (res.ok) {
-          setMessage(await res.json());
+          const data: ContactMessage = await res.json();
+          setMessage(data);
+          if (!data.is_read) {
+            apiFetch(`/admin/contacts/${params.id}`, {
+              method: "PATCH",
+              body: JSON.stringify({ read: true }),
+            }).then(async (r) => {
+              if (r.ok) setMessage(await r.json());
+            });
+          }
         } else if (res.status === 404) {
           router.push("/dashboard/contacts");
         }
@@ -51,24 +59,6 @@ export default function ContactDetailPage() {
     };
     fetchMessage();
   }, [params.id, router]);
-
-  const toggleRead = async () => {
-    if (!message || toggling) return;
-    setToggling(true);
-    try {
-      const res = await apiFetch(`/admin/contacts/${message.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ read: !message.is_read }),
-      });
-      if (res.ok) {
-        setMessage(await res.json());
-      }
-    } catch {
-      // Handled by apiFetch
-    } finally {
-      setToggling(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -124,17 +114,6 @@ export default function ContactDetailPage() {
 
       {/* Actions */}
       <div className="flex gap-3">
-        <button
-          onClick={toggleRead}
-          disabled={toggling}
-          className="px-5 py-2 text-sm rounded-lg border border-orange/30 text-orange hover:bg-orange/10 transition-all duration-200 disabled:opacity-50 cursor-pointer"
-        >
-          {toggling
-            ? "..."
-            : message.is_read
-              ? "mark as unread_"
-              : "mark as read_"}
-        </button>
         <a
           href={`mailto:${message.email}`}
           className="px-5 py-2 text-sm rounded-lg border border-white/10 text-white/60 hover:border-white/20 hover:text-white transition-all duration-200"

@@ -103,12 +103,14 @@ export function ContactForm() {
           id="message"
           name="message"
           required
+          minLength={10}
           rows={4}
           onFocus={() => setFocused("message")}
           onBlur={() => setFocused(null)}
           className="w-full bg-transparent border-b-2 border-navy/20 pb-2 text-navy outline-none focus:border-orange transition-all duration-300 resize-none placeholder:text-navy/30"
           placeholder="Your message..."
         />
+        <p className="text-xs text-navy/30 mt-1">Minimum 10 characters</p>
       </div>
 
       {status === "error" && (
