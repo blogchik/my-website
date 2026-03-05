@@ -41,7 +41,7 @@ export interface Tool {
 export const categories = [
   "Generators",
   "Encoders / Decoders",
-  "Formatters",
+  "Text Processing",
   "Converters",
   "Security",
   "Text",
@@ -125,6 +125,58 @@ export const tools: Tool[] = [
         "sha256 online",
         "md5 checksum generator",
         "cryptographic hash online",
+      ],
+    },
+  },
+  {
+    slug: "json-formatter",
+    name: "JSON Formatter",
+    description:
+      "Validate, format and sort JSON instantly. Prettify with custom indentation, sort keys, and copy with one click.",
+    icon: "{}",
+    category: "Text Processing",
+    banner: null,
+    seo: {
+      title: "JSON Formatter & Validator — Prettify JSON Online Free",
+      description:
+        "Free online JSON formatter and validator. Paste raw JSON to instantly format, validate, sort keys, and adjust indentation. Works fully in your browser — no data sent to servers.",
+      keywords: [
+        "json formatter",
+        "json validator",
+        "json prettifier",
+        "format json online",
+        "json beautifier",
+        "json lint",
+        "pretty print json",
+        "json sort keys",
+        "json online tool",
+        "json parser online",
+      ],
+    },
+  },
+  {
+    slug: "base64",
+    name: "Base64 Encoder / Decoder",
+    description:
+      "Encode plain text to Base64 or decode Base64 back to a string. Instant, browser-side, no data sent to servers.",
+    icon: "🔤",
+    category: "Text Processing",
+    banner: null,
+    seo: {
+      title: "Base64 Encoder / Decoder — Encode & Decode Online Free",
+      description:
+        "Free online Base64 encoder and decoder. Encode plain text to Base64 or decode Base64 strings back to text instantly in your browser. No sign-up, no data sent to servers.",
+      keywords: [
+        "base64 encoder",
+        "base64 decoder",
+        "base64 encode online",
+        "base64 decode online",
+        "base64 converter",
+        "encode text to base64",
+        "decode base64 to text",
+        "base64 online tool",
+        "base64 string converter",
+        "base64 free tool",
       ],
     },
   },

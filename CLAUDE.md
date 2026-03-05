@@ -265,6 +265,8 @@ Each tool page consists of **common sections** (present on every tool) plus **to
 | UUID Generator | `uuid-generator` | Generators |
 | Password Generator | `password-generator` | Generators |
 | Hash Generator | `hash-generator` | Generators |
+| JSON Formatter | `json-formatter` | Text Processing |
+| Base64 Encoder / Decoder | `base64` | Text Processing |
 
 ### Files
 
@@ -283,6 +285,12 @@ frontend/src/
     └── hash-generator/
         ├── page.tsx                      ← /tools/hash-generator (metadata + layout)
         └── hash-playground.tsx           ← interactive client component (MD5 pure-JS + Web Crypto SHA)
+    └── json-formatter/
+        ├── page.tsx                      ← /tools/json-formatter (metadata + layout)
+        └── json-playground.tsx           ← interactive client component (parse, format, sort keys, highlight)
+    └── base64/
+        ├── page.tsx                      ← /tools/base64 (metadata + layout)
+        └── base64-playground.tsx         ← interactive client component (encode/decode, switch, copy)
 ```
 
 ## Backend architecture
