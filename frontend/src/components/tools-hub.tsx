@@ -25,7 +25,8 @@ export function ToolsHub() {
           return (
             tool.name.toLowerCase().includes(q) ||
             tool.description.toLowerCase().includes(q) ||
-            tool.slug.toLowerCase().includes(q)
+            tool.slug.toLowerCase().includes(q) ||
+            tool.seo.keywords.some((kw) => kw.toLowerCase().includes(q))
           );
         }),
       }))
