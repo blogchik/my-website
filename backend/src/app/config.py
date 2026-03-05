@@ -56,9 +56,10 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":
-        if self.environment == "production":
-            if self.jwt_secret == "dev-secret-change-in-prod" or len(self.jwt_secret) < 32:
-                raise ValueError("JWT_SECRET must be a strong secret in production (min 32 chars)")
+        if self.environment == "production" and (
+            self.jwt_secret == "dev-secret-change-in-prod" or len(self.jwt_secret) < 32
+        ):
+            raise ValueError("JWT_SECRET must be a strong secret in production (min 32 chars)")
         return self
 
     @property

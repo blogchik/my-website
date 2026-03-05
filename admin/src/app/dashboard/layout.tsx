@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { isAuthenticated } from "@/lib/auth";
@@ -11,17 +11,15 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [checked, setChecked] = useState(false);
+  const auth = isAuthenticated();
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!auth) {
       router.replace("/login");
-    } else {
-      setChecked(true);
     }
-  }, [router]);
+  }, [auth, router]);
 
-  if (!checked) {
+  if (!auth) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-navy">
         <div className="text-white font-mono text-sm animate-pulse">
