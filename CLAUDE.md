@@ -260,41 +260,30 @@ Each tool page consists of **common sections** (present on every tool) plus **to
 
 ### Current tools
 
-| Tool | Slug | Category |
-|------|------|----------|
-| UUID Generator | `uuid-generator` | Generators |
-| Password Generator | `password-generator` | Generators |
-| Hash Generator | `hash-generator` | Generators |
-| JSON Formatter | `json-formatter` | Text Processing |
-| Base64 Encoder / Decoder | `base64` | Text Processing |
-| JSON ↔ YAML Converter | `json-yaml` | Text Processing |
+33 tools across 8 categories (see full list in `frontend/src/lib/tools.ts`):
+
+| Category | Tools |
+|----------|-------|
+| Generators | UUID, Password, Hash, Lorem Ipsum, Slug, NanoID |
+| Text Processing | JSON Formatter, Base64, Character Counter, XML Formatter, Diff Checker, Case Converter, Regex Tester, Markdown Previewer |
+| Encoders / Decoders | JWT Decoder, URL Encoder / Decoder |
+| Converters | JSON ↔ YAML, Timestamp, JSON ↔ CSV |
+| Web & API | Query String Parser, HTTP Status Codes, Curl Builder, Webhook Tester, API Playground, Open Graph Preview, Robots.txt Validator |
+| CSS & Design | Color Converter, CSS Shadow Generator |
+| Media | Image Compressor |
+| DevOps | Cron Expression Helper, Date & Timezone Helper, Tech Stack Snippets, LLM Pricing Compare |
 
 ### Files
 
 ```
 frontend/src/
-├── lib/tools.ts                         ← tool registry & types
-├── components/tool-card.tsx              ← card shown on /tools listing
+├── lib/tools.ts              ← tool registry & types (Category, Tool, tools[], toolsByCategory())
+├── components/tool-card.tsx  ← card shown on /tools listing
 └── app/tools/
-    ├── page.tsx                          ← /tools listing (server component)
-    ├── uuid-generator/
-    │   ├── page.tsx                      ← /tools/uuid-generator (metadata + layout)
-    │   └── uuid-playground.tsx           ← interactive client component
-    ├── password-generator/
-    │   ├── page.tsx                      ← /tools/password-generator (metadata + layout)
-    │   └── password-playground.tsx       ← interactive client component
-    └── hash-generator/
-        ├── page.tsx                      ← /tools/hash-generator (metadata + layout)
-        └── hash-playground.tsx           ← interactive client component (MD5 pure-JS + Web Crypto SHA)
-    └── json-formatter/
-        ├── page.tsx                      ← /tools/json-formatter (metadata + layout)
-        └── json-playground.tsx           ← interactive client component (parse, format, sort keys, highlight)
-    └── base64/
-        ├── page.tsx                      ← /tools/base64 (metadata + layout)
-        └── base64-playground.tsx         ← interactive client component (encode/decode, switch, copy)
-    └── json-yaml/
-        ├── page.tsx                      ← /tools/json-yaml (metadata + layout)
-        └── yaml-playground.tsx           ← interactive client component (js-yaml, direction, indent, sort)
+    ├── page.tsx              ← /tools listing (server component)
+    └── [slug]/
+        ├── page.tsx          ← metadata + layout (server component)
+        └── *-playground.tsx  ← interactive client component
 ```
 
 ## Backend architecture
@@ -325,8 +314,8 @@ REST API for abduroziq.uz. Built with Python 3.12, FastAPI, SQLAlchemy (async), 
 | `GET` | `/admin/contacts` | Paginated contact list with search (auth required) |
 | `GET` | `/admin/contacts/{id}` | Single contact message (auth required) |
 | `PATCH` | `/admin/contacts/{id}` | Mark read/unread (auth required) |
-| `GET` | `/docs` | Swagger UI (available in all environments) |
-| `GET` | `/redoc` | ReDoc (available in all environments) |
+| `GET` | `/docs` | Swagger UI (**dev only** — disabled in production) |
+| `GET` | `/redoc` | ReDoc (**dev only** — disabled in production) |
 
 All endpoints are served from `api.abduroziq.uz` (production) or `localhost:4000` (dev).
 
@@ -348,7 +337,7 @@ Docker multi-stage build (`python:3.12-slim`). Three stages:
 
 - `development` — full deps, `uvicorn --reload` (used by `docker-compose.override.yml`)
 - `deps` — production deps only (`uv sync --no-dev`)
-- `runner` — non-root user, `uvicorn` with 2 workers (used by `docker-compose.prod.yml`)
+- `runner` — non-root user, `uvicorn` with 1 worker (used by `docker-compose.prod.yml`)
 
 Backend port: 4000 (internal). Accessed via `api.abduroziq.uz` subdomain (Traefik/Nginx routes to `backend:4000`).
 
