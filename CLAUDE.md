@@ -169,10 +169,12 @@ CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then tr
 
 Personal portfolio for Jabborov Abduroziq. Built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind CSS v4.
 
-- `frontend/src/app/` — App Router pages: home, `/about`, `/blog`, `/contact`, `/projects`
-- `frontend/src/components/` — Shared components (header, footer, globe, custom-cursor, navigation-menu, project-card, contact-form)
+- `frontend/src/app/` — App Router pages: home, `/about`, `/blog`, `/contact`, `/projects`, `/tools`
+- `frontend/src/app/tools/` — Tools Hub listing page + individual tool pages (`/tools/[slug]`)
+- `frontend/src/components/` — Shared components (header, footer, globe, custom-cursor, navigation-menu, project-card, contact-form, tool-card)
 - `frontend/src/components/icons/` — SVG icon components
 - `frontend/src/lib/constants.ts` — Social links
+- `frontend/src/lib/tools.ts` — Tools registry (data, types, `toolsByCategory()` helper)
 - `frontend/src/app/opengraph-image.tsx` — Dynamic OG image via `next/og`
 - `frontend/src/app/globals.css` — Tailwind v4 `@theme` with custom colors and animations
 
@@ -210,6 +212,74 @@ Site URL from `NEXT_PUBLIC_SITE_URL` env var.
 
 - `cobe` — WebGL globe on the homepage
 - Package manager: **pnpm**
+
+## Tools Hub architecture
+
+A collection of free, browser-based developer utilities living under `/tools`. Each tool has its own playground page at `/tools/[slug]`.
+
+### Adding a new tool
+
+1. **Register** the tool in `frontend/src/lib/tools.ts` — add an entry to the `tools` array. If the tool belongs to a new category, add the category to the `categories` tuple first.
+2. **Create the page** at `frontend/src/app/tools/<slug>/page.tsx` (server component with metadata) and a companion client component for the interactive playground.
+3. Optionally add a **21 : 9 banner image** to `frontend/public/tools/<slug>/banner.webp` and set the `banner` field.
+
+### Common fields per tool
+
+Every tool entry in the registry has:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `slug` | `string` | URL segment (`/tools/<slug>`) |
+| `name` | `string` | Display name on card & page |
+| `description` | `string` | Short one-liner for the card |
+| `icon` | `string` | Emoji shown when no banner exists |
+| `category` | `Category` | Grouping key (e.g. "Generators") |
+| `banner` | `string \| null` | Path to 21 : 9 banner image in `/public` |
+| `seo.title` | `string` | Custom `<title>` optimised for search (~60 chars) |
+| `seo.description` | `string` | Meta description optimised for CTR (150-160 chars) |
+| `seo.keywords` | `string[]` | Relevant search terms for the tool |
+| `seo.canonical` | `string?` | Override canonical URL (defaults to `/tools/<slug>`) |
+
+Each tool page also includes **JSON-LD structured data** (`WebApplication` schema) for rich search results.
+
+### Tool playground conventions
+
+Each tool page consists of **common sections** (present on every tool) plus **tool-specific playground controls**:
+
+**Common sections:**
+- Breadcrumb navigation (Tools Hub → Tool Name)
+- Title, description
+- Banner image area (21 : 9 aspect ratio)
+
+**Tool-specific playground (varies per tool):**
+- Interactive controls (inputs, selects, buttons)
+- Result area with one-click copy
+- Recent results history (persisted via cookie)
+- Structural / educational info about the tool's domain
+- "Where is this useful" quick reference
+
+### Current tools
+
+| Tool | Slug | Category |
+|------|------|----------|
+| UUID Generator | `uuid-generator` | Generators |
+| Password Generator | `password-generator` | Security |
+
+### Files
+
+```
+frontend/src/
+├── lib/tools.ts                         ← tool registry & types
+├── components/tool-card.tsx              ← card shown on /tools listing
+└── app/tools/
+    ├── page.tsx                          ← /tools listing (server component)
+    ├── uuid-generator/
+    │   ├── page.tsx                      ← /tools/uuid-generator (metadata + layout)
+    │   └── uuid-playground.tsx           ← interactive client component
+    └── password-generator/
+        ├── page.tsx                      ← /tools/password-generator (metadata + layout)
+        └── password-playground.tsx       ← interactive client component
+```
 
 ## Backend architecture
 
