@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { apiFetch } from "@/lib/api";
@@ -14,10 +14,14 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const prevPathname = useRef(pathname);
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
-    setOpen(false);
+    if (prevPathname.current !== pathname) {
+      prevPathname.current = pathname;
+      setOpen(false);
+    }
   }, [pathname]);
 
   // Prevent body scroll when sidebar is open on mobile
