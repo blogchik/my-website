@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Tool } from "@/lib/tools";
 
@@ -16,11 +17,11 @@ export function ToolCard({ tool, index }: ToolCardProps) {
       {/* Banner / icon fallback */}
       <div className="relative aspect-[21/9] bg-navy/[0.03] flex items-center justify-center overflow-hidden">
         {tool.banner ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={tool.banner}
             alt={tool.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <span className="text-5xl md:text-6xl select-none group-hover:scale-110 transition-transform duration-300">

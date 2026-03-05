@@ -6,7 +6,7 @@ RUN corepack enable && corepack prepare pnpm@10.6.5 --activate
 # --- Development ---
 # Used by docker-compose.override.yml (target: development)
 # Source code is bind-mounted at runtime — no COPY here.
-# Command is provided by docker-compose.override.yml: pnpm dev
+# Command is overridden by docker-compose.override.yml: pnpm dev
 FROM base AS development
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
@@ -14,6 +14,7 @@ RUN pnpm install --frozen-lockfile
 EXPOSE 3001
 ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
+CMD ["pnpm", "dev"]
 
 # --- Dependencies (production) ---
 FROM base AS deps

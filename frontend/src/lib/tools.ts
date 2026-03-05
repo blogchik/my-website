@@ -33,7 +33,7 @@ export interface Tool {
   name: string;
   description: string;
   icon: string;
-  category: string;
+  category: Category;
   banner: string | null; // path relative to /public — null until an image is added
   seo: ToolSeo;
 }

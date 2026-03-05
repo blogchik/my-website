@@ -34,14 +34,15 @@ export default function ContactDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const id = Array.isArray(params.id) ? params.id[0] : params.id;
     const fetchMessage = async () => {
       try {
-        const res = await apiFetch(`/admin/contacts/${params.id}`);
+        const res = await apiFetch(`/admin/contacts/${id}`);
         if (res.ok) {
           const data: ContactMessage = await res.json();
           setMessage(data);
           if (!data.is_read) {
-            apiFetch(`/admin/contacts/${params.id}`, {
+            apiFetch(`/admin/contacts/${id}`, {
               method: "PATCH",
               body: JSON.stringify({ read: true }),
             }).then(async (r) => {
