@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
@@ -62,11 +62,12 @@ export default function WebhookPlayground() {
   const [customBody, setCustomBody] = useState("");
   const [customContentType, setCustomContentType] = useState("application/json");
   const [copied, setCopied] = useState<string | null>(null);
-  let nextId = entries.length;
+  const nextIdRef = React.useRef(0);
 
   const addEntry = useCallback((body: string, contentType: string) => {
+    const id = ++nextIdRef.current;
     const entry: WebhookEntry = {
-      id: ++nextId,
+      id,
       timestamp: new Date().toISOString(),
       method: "POST",
       headers: { "Content-Type": contentType, "User-Agent": "WebhookTester/1.0", "X-Request-Id": crypto.randomUUID?.() || Math.random().toString(36).slice(2) },

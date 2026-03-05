@@ -21,8 +21,8 @@ export default function UrlEncodPlayground() {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!input.trim()) { setOutput(""); setError(null); return; }
     debounceRef.current = setTimeout(() => {
+      if (!input.trim()) { setOutput(""); setError(null); return; }
       try {
         const result = mode === "encode" ? encodeURIComponent(input) : decodeURIComponent(input);
         setOutput(result); setError(null);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
@@ -33,13 +33,11 @@ export default function SlugPlayground() {
   const [separator, setSeparator] = useState("-");
   const [lowercase, setLowercase] = useState(true);
   const [maxLength, setMaxLength] = useState(0);
-  const [slug, setSlug] = useState("");
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!input.trim()) { setSlug(""); return; }
-    setSlug(toSlug(input, separator, lowercase, maxLength));
+  const slug = useMemo(() => {
+    if (!input.trim()) return "";
+    return toSlug(input, separator, lowercase, maxLength);
   }, [input, separator, lowercase, maxLength]);
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
     if (!slug) return;

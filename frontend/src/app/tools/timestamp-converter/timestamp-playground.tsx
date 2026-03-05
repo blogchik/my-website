@@ -47,7 +47,7 @@ export default function TimestampPlayground() {
   const [dateInput, setDateInput] = useState("");
   const [tz, setTz] = useState("UTC");
   const [copied, setCopied] = useState<string | null>(null);
-  const [now, setNow] = useState(Math.floor(Date.now() / 1000));
+  const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
 
   // live clock
   useEffect(() => {

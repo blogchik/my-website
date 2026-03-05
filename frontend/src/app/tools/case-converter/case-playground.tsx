@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
@@ -37,13 +37,11 @@ const cases = [
 
 export default function CasePlayground() {
   const [input, setInput] = useState("");
-  const [results, setResults] = useState<{ label: string; value: string }[]>([]);
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!input.trim()) { setResults([]); return; }
-    setResults(cases.map((c) => ({ label: c.label, value: c.fn(input) })));
+  const results = useMemo(() => {
+    if (!input.trim()) return [];
+    return cases.map((c) => ({ label: c.label, value: c.fn(input) }));
   }, [input]);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   const handleCopy = useCallback(async (text: string, idx: number) => {
     await copyToClipboard(text);

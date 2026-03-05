@@ -48,7 +48,7 @@ export default function CurlPlayground() {
 
   const addHeader = () => setHeaders([...headers, { key: "", value: "", enabled: true }]);
   const removeHeader = (i: number) => setHeaders(headers.filter((_, idx) => idx !== i));
-  const updateHeader = (i: number, field: keyof Header, value: string | boolean) => { const next = [...headers]; (next[i] as Record<string, unknown>)[field] = value; setHeaders(next); };
+  const updateHeader = (i: number, field: keyof Header, value: string | boolean) => { const next = [...headers]; (next[i] as unknown as Record<string, unknown>)[field] = value; setHeaders(next); };
 
   return (
     <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>

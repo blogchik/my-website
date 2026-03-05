@@ -56,12 +56,12 @@ export default function Base64Playground() {
   // Auto-convert on input/mode change (debounced 150ms)
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!input.trim()) {
-      setOutput("");
-      setError(null);
-      return;
-    }
     debounceRef.current = setTimeout(() => {
+      if (!input.trim()) {
+        setOutput("");
+        setError(null);
+        return;
+      }
       try {
         const result = mode === "encode" ? encodeBase64(input) : decodeBase64(input);
         setOutput(result);

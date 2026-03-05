@@ -144,6 +144,7 @@ export default function OgPreviewPlayground() {
 
             {activePreview === "twitter" && (
               <div className="rounded-xl border border-gray-200 overflow-hidden max-w-md bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 {tags.image && <div className="aspect-[2/1] bg-gray-100"><img src={tags.image} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /></div>}
                 <div className="p-3">
                   <div className="text-sm font-bold text-gray-900 truncate">{tags.title}</div>
@@ -155,6 +156,7 @@ export default function OgPreviewPlayground() {
 
             {activePreview === "facebook" && (
               <div className="border border-gray-200 overflow-hidden max-w-md bg-[#f0f2f5]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 {tags.image && <div className="aspect-[1.91/1] bg-gray-200"><img src={tags.image} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /></div>}
                 <div className="p-3 bg-[#f0f2f5]">
                   <div className="text-[10px] text-gray-500 uppercase">{new URL(tags.url || "https://example.com").hostname}</div>
@@ -166,6 +168,7 @@ export default function OgPreviewPlayground() {
 
             {activePreview === "linkedin" && (
               <div className="border border-gray-200 rounded-lg overflow-hidden max-w-md bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 {tags.image && <div className="aspect-[1.91/1] bg-gray-100"><img src={tags.image} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /></div>}
                 <div className="p-3">
                   <div className="text-sm font-semibold text-gray-900 truncate">{tags.title}</div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
@@ -56,7 +56,14 @@ export default function DateTimePlayground() {
   const [format, setFormat] = useState("full");
   const [durationFrom, setDurationFrom] = useState("");
   const [durationTo, setDurationTo] = useState("");
-  const [durationResult, setDurationResult] = useState("");
+  const durationResult = useMemo(() => {
+    if (!durationFrom || !durationTo) return "";
+    const from = new Date(durationFrom);
+    const to = new Date(durationTo);
+    if (isNaN(from.getTime()) || isNaN(to.getTime())) return "Invalid date";
+    const diff = to.getTime() - from.getTime();
+    return `${parseDuration(diff)} (${Math.abs(diff).toLocaleString()} ms)`;
+  }, [durationFrom, durationTo]);
   const [copiedTz, setCopiedTz] = useState<string | null>(null);
 
   const currentDate = useCustom && inputDate ? new Date(inputDate) : now;
@@ -65,17 +72,6 @@ export default function DateTimePlayground() {
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
-
-  useEffect(() => {
-    if (durationFrom && durationTo) {
-      const from = new Date(durationFrom);
-      const to = new Date(durationTo);
-      if (!isNaN(from.getTime()) && !isNaN(to.getTime())) {
-        const diff = to.getTime() - from.getTime();
-        setDurationResult(`${parseDuration(diff)} (${Math.abs(diff).toLocaleString()} ms)`);
-      } else setDurationResult("Invalid date");
-    }
-  }, [durationFrom, durationTo]);
 
   const toggleTz = useCallback((tz: string) => {
     setSelectedTzs((prev) => prev.includes(tz) ? prev.filter((t) => t !== tz) : [...prev, tz]);

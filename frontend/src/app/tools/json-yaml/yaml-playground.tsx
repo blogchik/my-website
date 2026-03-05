@@ -457,12 +457,12 @@ export default function YamlPlayground() {
   // Auto-convert on any relevant change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!input.trim()) {
-      setOutput("");
-      setError(null);
-      return;
-    }
     debounceRef.current = setTimeout(() => {
+      if (!input.trim()) {
+        setOutput("");
+        setError(null);
+        return;
+      }
       try {
         const result =
           direction === "json-to-yaml"

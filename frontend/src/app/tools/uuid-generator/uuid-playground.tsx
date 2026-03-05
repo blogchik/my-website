@@ -179,9 +179,8 @@ export function UuidPlayground() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
 
   // Load history from cookie only on client to avoid SSR/client mismatch
-  useEffect(() => {
-    setHistory(readHistory());
-  }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setHistory(readHistory()); }, []);
 
   const generate = useCallback(() => {
     const uuids = Array.from({ length: count }, () =>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
@@ -8,8 +8,6 @@ async function copyToClipboard(text: string): Promise<void> {
   el.value = text; el.style.cssText = "position:fixed;top:-9999px;left:-9999px;opacity:0";
   document.body.appendChild(el); el.focus(); el.select(); document.execCommand("copy"); document.body.removeChild(el);
 }
-
-interface CronField { value: string; label: string; options: { value: string; label: string }[] }
 
 const FIELD_DEFS: { label: string; min: number; max: number; names?: string[] }[] = [
   { label: "Minute", min: 0, max: 59 },
@@ -77,21 +75,16 @@ const PRESETS = [
 
 export default function CronPlayground() {
   const [expression, setExpression] = useState("*/15 * * * *");
-  const [nextRuns, setNextRuns] = useState<Date[]>([]);
-  const [description, setDescription] = useState("");
+  const description = useMemo(() => describeCron(expression), [expression]);
+  const nextRuns = useMemo(() => getNextRuns(expression, 10), [expression]);
   const [copied, setCopied] = useState(false);
-  const [fields, setFields] = useState(["*/15", "*", "*", "*", "*"]);
-
-  useEffect(() => {
-    setDescription(describeCron(expression));
-    setNextRuns(getNextRuns(expression, 10));
+  const fields = useMemo(() => {
     const parts = expression.trim().split(/\s+/);
-    if (parts.length === 5) setFields(parts);
+    return parts.length === 5 ? parts : ["*", "*", "*", "*", "*"];
   }, [expression]);
 
   const updateField = useCallback((idx: number, value: string) => {
     const next = [...fields]; next[idx] = value;
-    setFields(next);
     setExpression(next.join(" "));
   }, [fields]);
 

@@ -202,9 +202,8 @@ export function PasswordPlayground() {
   const [spinning, setSpinning] = useState(false);
 
   // Load history from cookie only on client to avoid SSR/client mismatch
-  useEffect(() => {
-    setHistory(readHistory());
-  }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setHistory(readHistory()); }, []);
 
   const atLeastOne = Object.values(types).some(Boolean);
   const entropy = password ? calcEntropy(length, types) : 0;

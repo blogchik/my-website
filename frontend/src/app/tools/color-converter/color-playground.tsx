@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
@@ -44,25 +44,16 @@ function contrastRatio(rgb1: [number, number, number], rgb2: [number, number, nu
 
 export default function ColorPlayground() {
   const [hex, setHex] = useState("#E28413");
-  const [rgb, setRgb] = useState<[number, number, number]>([226, 132, 19]);
-  const [hsl, setHsl] = useState<[number, number, number]>([33, 84, 48]);
+  const rgb = useMemo<[number, number, number]>(() => hexToRgb(hex) ?? [226, 132, 19], [hex]);
+  const hsl = useMemo<[number, number, number]>(() => rgbToHsl(...rgb), [rgb]);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  useEffect(() => {
-    const parsed = hexToRgb(hex);
-    if (parsed) { setRgb(parsed); setHsl(rgbToHsl(...parsed)); }
-  }, [hex]);
-
   const updateFromRgb = useCallback((r: number, g: number, b: number) => {
-    setRgb([r, g, b]);
     setHex(rgbToHex(r, g, b));
-    setHsl(rgbToHsl(r, g, b));
   }, []);
 
   const updateFromHsl = useCallback((h: number, s: number, l: number) => {
-    setHsl([h, s, l]);
     const [r, g, b] = hslToRgb(h, s, l);
-    setRgb([r, g, b]);
     setHex(rgbToHex(r, g, b));
   }, []);
 

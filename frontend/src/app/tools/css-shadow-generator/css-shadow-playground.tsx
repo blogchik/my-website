@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
@@ -30,14 +30,11 @@ export default function CssShadowPlayground() {
   const [bgColor, setBgColor] = useState("#ffffff");
   const [boxBg, setBoxBg] = useState("#ffffff");
   const [copied, setCopied] = useState(false);
-  const [cssOutput, setCssOutput] = useState("");
-
-  useEffect(() => {
-    const lines = [
+  const cssOutput = useMemo(() => {
+    return [
       `box-shadow: ${toShadowString(shadow)};`,
       `border-radius: ${borderRadius}px;`,
-    ];
-    setCssOutput(lines.join("\n"));
+    ].join("\n");
   }, [shadow, borderRadius]);
 
   const update = useCallback(<K extends keyof ShadowState>(key: K, value: ShadowState[K]) => {

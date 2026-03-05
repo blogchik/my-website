@@ -152,20 +152,19 @@ export default function JsonPlayground() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load history from cookie on client only
-  useEffect(() => {
-    setHistory(readHistory());
-  }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setHistory(readHistory()); }, []);
 
   // Auto-format on input / indent / sortKeys change (debounced 250ms)
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!input.trim()) {
-      setFormatted("");
-      setError(null);
-      setStats(null);
-      return;
-    }
     debounceRef.current = setTimeout(() => {
+      if (!input.trim()) {
+        setFormatted("");
+        setError(null);
+        setStats(null);
+        return;
+      }
       try {
         let parsed = JSON.parse(input);
         if (sortKeys) parsed = sortKeysDeep(parsed);

@@ -102,6 +102,7 @@ export default function ImageCompressorPlayground() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="border border-navy/10 rounded-2xl p-5 bg-white/40 space-y-3">
               <span className="font-bold text-sm text-navy/70 uppercase tracking-wider">Original</span>
+              { /* eslint-disable-next-line @next/next/no-img-element */ }
               <img src={original.url} alt="Original" className="w-full rounded-lg border border-navy/10 object-contain max-h-64" />
               <div className="flex gap-4 text-xs text-navy/40">
                 <span>{fmtSize(original.size)}</span>
@@ -116,6 +117,7 @@ export default function ImageCompressorPlayground() {
               </div>
               {compressed ? (
                 <>
+                  { /* eslint-disable-next-line @next/next/no-img-element */ }
                   <img src={compressed.url} alt="Compressed" className="w-full rounded-lg border border-navy/10 object-contain max-h-64" />
                   <div className="flex gap-4 text-xs text-navy/40">
                     <span>{fmtSize(compressed.size)}</span>

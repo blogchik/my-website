@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 interface Model { name: string; provider: string; inputPer1M: number; outputPer1M: number; contextWindow: number; notes?: string }
 
@@ -58,7 +58,7 @@ export default function LlmPricingPlayground() {
   }, [effectiveInput, effectiveOutput]);
 
   const filtered = useMemo(() => {
-    let list = MODELS.filter((m) => {
+    const list = MODELS.filter((m) => {
       const matchProvider = selectedProvider === "all" || m.provider === selectedProvider;
       const q = search.toLowerCase();
       const matchSearch = !q || m.name.toLowerCase().includes(q) || m.provider.toLowerCase().includes(q);
