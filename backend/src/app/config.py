@@ -8,6 +8,7 @@ Never create .env files inside this directory.
 from functools import lru_cache
 from typing import Literal
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -52,6 +53,13 @@ class Settings(BaseSettings):
     jwt_access_expire_minutes: int = 15
     jwt_refresh_expire_days: int = 7
     admin_cors_origin: str = "http://localhost:3001"
+
+    @model_validator(mode="after")
+    def validate_production_secrets(self) -> "Settings":
+        if self.environment == "production":
+            if self.jwt_secret == "dev-secret-change-in-prod" or len(self.jwt_secret) < 32:
+                raise ValueError("JWT_SECRET must be a strong secret in production (min 32 chars)")
+        return self
 
     @property
     def is_production(self) -> bool:

@@ -6,7 +6,7 @@
 # automatically every 12 hours.
 #
 # Prerequisites:
-#   - DNS A record for DOMAIN (and www.DOMAIN) pointing to this VPS
+#   - DNS A records for DOMAIN, www.DOMAIN, api.DOMAIN, admin.DOMAIN pointing to this VPS
 #   - Ports 80 and 443 open in the VPS firewall
 #   - Docker and docker compose installed
 #   - .env.prod exists at repo root with DOMAIN= and CERTBOT_EMAIL= set
@@ -66,7 +66,9 @@ $COMPOSE run --rm --no-deps certbot certonly \
     --agree-tos \
     --no-eff-email \
     -d "$DOMAIN" \
-    -d "www.$DOMAIN"
+    -d "www.$DOMAIN" \
+    -d "api.$DOMAIN" \
+    -d "admin.$DOMAIN"
 
 echo ""
 echo ">> Certificate obtained! Reloading nginx with full HTTPS config..."

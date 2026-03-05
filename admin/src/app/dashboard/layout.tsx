@@ -1,22 +1,34 @@
 "use client";
 
-import { use } from "react";
-import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
-
-const authCheck = typeof window !== "undefined"
-  ? Promise.resolve(!!sessionStorage.getItem("admin_access_token"))
-  : Promise.resolve(false);
+import { isAuthenticated } from "@/lib/auth";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const authenticated = use(authCheck);
+  const router = useRouter();
+  const [checked, setChecked] = useState(false);
 
-  if (!authenticated) {
-    redirect("/login");
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      router.replace("/login");
+    } else {
+      setChecked(true);
+    }
+  }, [router]);
+
+  if (!checked) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-navy">
+        <div className="text-white font-mono text-sm animate-pulse">
+          Checking auth...
+        </div>
+      </div>
+    );
   }
 
   return (
