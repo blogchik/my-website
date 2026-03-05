@@ -6,9 +6,9 @@ Stricter rate limit: 5 requests per hour per IP to prevent spam.
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.database import get_db
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/api", tags=["contact"])
 async def submit_contact(
     request: Request,
     data: ContactRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> ContactResponse:
     """
     Handle contact form submission.
@@ -56,9 +56,10 @@ async def submit_contact(
     )
 
     if email_sent:
-        contact.sent_at = datetime.now(timezone.utc)
+        contact.sent_at = datetime.now(UTC)
 
+    pending_msg = "Message received (email delivery pending)"
     return ContactResponse(
         success=True,
-        message="Message sent successfully" if email_sent else "Message received (email delivery pending)",
+        message="Message sent successfully" if email_sent else pending_msg,
     )

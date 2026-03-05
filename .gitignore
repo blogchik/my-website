@@ -44,3 +44,4 @@ Thumbs.db
 # Misc
 *.pem
 .vercel
+__pycache__/

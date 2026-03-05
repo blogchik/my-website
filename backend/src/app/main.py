@@ -6,8 +6,8 @@ registers routers, and handles application lifecycle (startup/shutdown).
 """
 
 import logging
-from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,9 +18,9 @@ from slowapi.errors import RateLimitExceeded
 from sqlalchemy import text
 
 from src.app.config import get_settings
-from src.app.database import engine, async_session
+from src.app.database import async_session, engine
 from src.app.middleware.rate_limiter import limiter
-from src.app.routers import health, contact
+from src.app.routers import contact, health
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
