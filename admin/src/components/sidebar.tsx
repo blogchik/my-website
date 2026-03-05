@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { apiFetch } from "@/lib/api";
@@ -14,15 +14,6 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const prevPathname = useRef(pathname);
-
-  // Close sidebar on route change (mobile)
-  useEffect(() => {
-    if (prevPathname.current !== pathname) {
-      prevPathname.current = pathname;
-      setOpen(false);
-    }
-  }, [pathname]);
 
   // Prevent body scroll when sidebar is open on mobile
   useEffect(() => {
@@ -119,6 +110,7 @@ export function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => setOpen(false)}
                 className={`flex items-center gap-3 px-5 py-3 text-sm transition-all duration-200 ${
                   isActive
                     ? "text-orange border-l-2 border-orange bg-navy/5"
