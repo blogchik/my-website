@@ -24,11 +24,11 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-56 bg-navy border-r border-white/10 flex flex-col z-40">
-      <div className="p-5 border-b border-white/10">
+    <aside className="fixed left-0 top-0 h-full w-56 bg-white border-r border-navy/10 flex flex-col z-40">
+      <div className="p-5 border-b border-navy/10">
         <Link href="/dashboard" className="text-sm font-bold tracking-wider">
           <span className="text-orange">admin</span>
-          <span className="text-white/60">_panel</span>
+          <span className="text-navy/60">_panel</span>
         </Link>
       </div>
 
@@ -45,8 +45,8 @@ export function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-5 py-3 text-sm transition-all duration-200 ${
                 isActive
-                  ? "text-orange border-l-2 border-orange bg-white/5"
-                  : "text-white/60 border-l-2 border-transparent hover:text-white hover:bg-white/[0.02]"
+                  ? "text-orange border-l-2 border-orange bg-navy/5"
+                  : "text-navy/60 border-l-2 border-transparent hover:text-navy hover:bg-navy/[0.02]"
               }`}
             >
               <span className="font-bold">{item.icon}</span>
@@ -56,10 +56,10 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-navy/10">
         <button
           onClick={handleLogout}
-          className="w-full text-left text-sm text-white/40 hover:text-orange transition-colors duration-200 cursor-pointer"
+          className="w-full text-left text-sm text-navy/40 hover:text-orange transition-colors duration-200 cursor-pointer"
         >
           logout_
         </button>

@@ -12,17 +12,17 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        className="text-sm text-white/60 hover:text-orange disabled:text-white/20 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="text-sm text-navy/60 hover:text-orange disabled:text-navy/20 disabled:cursor-not-allowed transition-colors cursor-pointer"
       >
         prev_
       </button>
-      <span className="text-sm text-white/40">
+      <span className="text-sm text-navy/40">
         {page} / {totalPages}
       </span>
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className="text-sm text-white/60 hover:text-orange disabled:text-white/20 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="text-sm text-navy/60 hover:text-orange disabled:text-navy/20 disabled:cursor-not-allowed transition-colors cursor-pointer"
       >
         next_
       </button>

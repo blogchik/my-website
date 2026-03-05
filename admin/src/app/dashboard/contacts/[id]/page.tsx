@@ -75,7 +75,7 @@ export default function ContactDetailPage() {
       {/* Back button */}
       <button
         onClick={() => router.push("/dashboard/contacts")}
-        className="text-sm text-white/30 hover:text-orange transition-colors cursor-pointer"
+        className="text-sm text-navy/30 hover:text-orange transition-colors cursor-pointer"
       >
         &larr; back to contacts
       </button>
@@ -95,7 +95,7 @@ export default function ContactDetailPage() {
       </div>
 
       {/* Metadata */}
-      <div className="flex gap-6 text-xs text-white/30">
+      <div className="flex gap-6 text-xs text-navy/30">
         <span>received: {formatDate(message.created_at)}</span>
         {message.sent_at && (
           <span>email sent: {formatDate(message.sent_at)}</span>
@@ -106,8 +106,8 @@ export default function ContactDetailPage() {
       </div>
 
       {/* Message body */}
-      <div className="rounded-lg border border-white/10 p-6 bg-white/[0.02]">
-        <p className="text-sm leading-relaxed whitespace-pre-wrap text-white/80">
+      <div className="rounded-lg border border-navy/10 p-6 bg-navy/[0.02]">
+        <p className="text-sm leading-relaxed whitespace-pre-wrap text-navy/80">
           {message.message}
         </p>
       </div>
@@ -116,7 +116,7 @@ export default function ContactDetailPage() {
       <div className="flex gap-3">
         <a
           href={`mailto:${message.email}`}
-          className="px-5 py-2 text-sm rounded-lg border border-white/10 text-white/60 hover:border-white/20 hover:text-white transition-all duration-200"
+          className="px-5 py-2 text-sm rounded-lg border border-navy/10 text-navy/60 hover:border-navy/20 hover:text-navy transition-all duration-200"
         >
           reply via email_
         </a>

@@ -4,7 +4,7 @@ const variants: Record<BadgeVariant, { dot: string; text: string; label: string 
   ok: { dot: "bg-green-400", text: "text-green-400", label: "operational" },
   degraded: { dot: "bg-amber-400", text: "text-amber-400", label: "degraded" },
   error: { dot: "bg-red-400", text: "text-red-400", label: "error" },
-  read: { dot: "bg-white/30", text: "text-white/40", label: "read" },
+  read: { dot: "bg-navy/30", text: "text-navy/40", label: "read" },
   unread: { dot: "bg-orange", text: "text-orange", label: "unread" },
 };
 

@@ -92,8 +92,8 @@ export default function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rounded-lg border border-white/10 p-6 animate-scale-in">
-          <p className="text-xs text-white/40 mb-2">system_status</p>
+        <div className="rounded-lg border border-navy/10 p-6 animate-scale-in">
+          <p className="text-xs text-navy/40 mb-2">system_status</p>
           <div className="flex items-center justify-between">
             <StatusBadge
               variant={
@@ -104,30 +104,30 @@ export default function DashboardPage() {
                     : "error"
               }
             />
-            <span className="text-xs text-white/30">
+            <span className="text-xs text-navy/30">
               {health ? formatUptime(health.uptime) : "--"}
             </span>
           </div>
-          <p className="text-xs text-white/20 mt-3">
+          <p className="text-xs text-navy/20 mt-3">
             db: {health?.database ?? "--"} | env: {health?.environment ?? "--"}
           </p>
         </div>
 
         <div
-          className="rounded-lg border border-white/10 p-6 animate-scale-in"
+          className="rounded-lg border border-navy/10 p-6 animate-scale-in"
           style={{ animationDelay: "100ms" }}
         >
-          <p className="text-xs text-white/40 mb-2">total_messages</p>
-          <p className="text-3xl font-bold text-white">
+          <p className="text-xs text-navy/40 mb-2">total_messages</p>
+          <p className="text-3xl font-bold text-navy">
             {health?.message_count ?? 0}
           </p>
         </div>
 
         <div
-          className="rounded-lg border border-white/10 p-6 animate-scale-in"
+          className="rounded-lg border border-navy/10 p-6 animate-scale-in"
           style={{ animationDelay: "200ms" }}
         >
-          <p className="text-xs text-white/40 mb-2">unread_messages</p>
+          <p className="text-xs text-navy/40 mb-2">unread_messages</p>
           <p className="text-3xl font-bold text-orange">
             {health?.unread_count ?? 0}
           </p>
@@ -137,17 +137,17 @@ export default function DashboardPage() {
       {/* Recent messages */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold text-white/60">recent_messages</h2>
+          <h2 className="text-sm font-bold text-navy/60">recent_messages</h2>
           <Link
             href="/dashboard/contacts"
-            className="text-xs text-white/30 hover:text-orange transition-colors"
+            className="text-xs text-navy/30 hover:text-orange transition-colors"
           >
             view all_
           </Link>
         </div>
 
         {recentMessages.length === 0 ? (
-          <div className="text-center py-12 text-white/20 text-sm">
+          <div className="text-center py-12 text-navy/20 text-sm">
             no messages yet
           </div>
         ) : (
@@ -160,10 +160,10 @@ export default function DashboardPage() {
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 <div
-                  className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:border-white/20 ${
+                  className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:border-navy/20 ${
                     msg.is_read
-                      ? "border-white/5 bg-white/[0.02]"
-                      : "border-l-2 border-l-orange border-t border-r border-b border-white/10 bg-white/[0.03]"
+                      ? "border-navy/5 bg-navy/[0.02]"
+                      : "border-l-2 border-l-orange border-t border-r border-b border-navy/10 bg-navy/[0.03]"
                   }`}
                 >
                   <div className="flex-1 min-w-0">
@@ -173,12 +173,12 @@ export default function DashboardPage() {
                       </span>
                       {!msg.is_read && <StatusBadge variant="unread" />}
                     </div>
-                    <p className="text-xs text-white/30 truncate mt-1">
+                    <p className="text-xs text-navy/30 truncate mt-1">
                       {msg.message.slice(0, 80)}
                       {msg.message.length > 80 ? "..." : ""}
                     </p>
                   </div>
-                  <span className="text-xs text-white/20 shrink-0">
+                  <span className="text-xs text-navy/20 shrink-0">
                     {formatDate(msg.created_at)}
                   </span>
                 </div>

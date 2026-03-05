@@ -29,16 +29,16 @@ export default function LoginPage() {
       <div className="animate-fade-up text-center space-y-8">
         <div>
           <h1 className="text-2xl font-bold tracking-wider">
-            <span className="text-white/90">Welcome to </span>
+            <span className="text-navy/90">Welcome to </span>
             <span className="text-orange">Pilot&apos;s Cabin</span>
-            <span className="text-white/90">!</span>
+            <span className="text-navy/90">!</span>
           </h1>
-          <p className="text-white/30 text-sm mt-2">abduroziq.uz</p>
+          <p className="text-navy/30 text-sm mt-2">abduroziq.uz</p>
         </div>
 
         <button
           onClick={handleLogin}
-          className="group relative px-8 py-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white/80 hover:border-orange/50 hover:text-orange transition-all duration-300 cursor-pointer"
+          className="group relative px-8 py-3 bg-navy/5 border border-navy/10 rounded-lg text-sm text-navy/80 hover:border-orange/50 hover:text-orange transition-all duration-300 cursor-pointer"
         >
           <span className="flex items-center gap-3">
             <svg
@@ -57,7 +57,7 @@ export default function LoginPage() {
           </span>
         </button>
 
-        <p className="text-white/20 text-xs">authorized access only</p>
+        <p className="text-navy/20 text-xs">authorized access only</p>
       </div>
     </div>
   );

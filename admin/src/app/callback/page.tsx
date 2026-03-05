@@ -63,7 +63,7 @@ function CallbackHandler() {
           <p className="text-red-400 text-sm">{error}</p>
           <button
             onClick={() => router.push("/login")}
-            className="text-sm text-white/40 hover:text-orange transition-colors cursor-pointer"
+            className="text-sm text-navy/40 hover:text-orange transition-colors cursor-pointer"
           >
             back to login_
           </button>
@@ -76,7 +76,7 @@ function CallbackHandler() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="animate-fade-in text-center space-y-4">
         <div className="w-3 h-3 bg-orange rounded-full mx-auto animate-pulse" />
-        <p className="text-white/40 text-sm">authenticating...</p>
+        <p className="text-navy/40 text-sm">authenticating...</p>
       </div>
     </div>
   );

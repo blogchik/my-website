@@ -84,7 +84,7 @@ export default function ContactsPage() {
           placeholder="search by name or email..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="flex-1 max-w-sm bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-white/20 outline-none focus:border-orange/50 transition-colors"
+          className="flex-1 max-w-sm bg-navy/5 border border-navy/10 rounded-lg px-4 py-2 text-sm text-navy placeholder-navy/20 outline-none focus:border-orange/50 transition-colors"
         />
         <button
           onClick={() => {
@@ -94,7 +94,7 @@ export default function ContactsPage() {
           className={`text-xs px-4 py-2 rounded-lg border transition-all duration-200 cursor-pointer ${
             unreadOnly
               ? "border-orange/50 text-orange bg-orange/10"
-              : "border-white/10 text-white/40 hover:border-white/20"
+              : "border-navy/10 text-navy/40 hover:border-navy/20"
           }`}
         >
           unread only
@@ -102,7 +102,7 @@ export default function ContactsPage() {
       </div>
 
       {/* Total count */}
-      <p className="text-xs text-white/30">
+      <p className="text-xs text-navy/30">
         {total} message{total !== 1 ? "s" : ""}
         {search ? ` matching "${search}"` : ""}
       </p>
@@ -111,7 +111,7 @@ export default function ContactsPage() {
       {loading ? (
         <LoadingSkeleton rows={8} />
       ) : messages.length === 0 ? (
-        <div className="text-center py-16 text-white/20 text-sm">
+        <div className="text-center py-16 text-navy/20 text-sm">
           {search ? "no messages match your search" : "no messages yet"}
         </div>
       ) : (
@@ -124,24 +124,24 @@ export default function ContactsPage() {
               style={{ animationDelay: `${i * 30}ms` }}
             >
               <div
-                className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:border-white/20 ${
+                className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:border-navy/20 ${
                   msg.is_read
-                    ? "border-white/5 bg-white/[0.02]"
-                    : "border-l-2 border-l-orange border-t border-r border-b border-white/10 bg-white/[0.03]"
+                    ? "border-navy/5 bg-navy/[0.02]"
+                    : "border-l-2 border-l-orange border-t border-r border-b border-navy/10 bg-navy/[0.03]"
                 }`}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium">{msg.name}</span>
-                    <span className="text-xs text-white/20">{msg.email}</span>
+                    <span className="text-xs text-navy/20">{msg.email}</span>
                     {!msg.is_read && <StatusBadge variant="unread" />}
                   </div>
-                  <p className="text-xs text-white/30 truncate mt-1">
+                  <p className="text-xs text-navy/30 truncate mt-1">
                     {msg.message.slice(0, 120)}
                     {msg.message.length > 120 ? "..." : ""}
                   </p>
                 </div>
-                <span className="text-xs text-white/20 shrink-0">
+                <span className="text-xs text-navy/20 shrink-0">
                   {formatDate(msg.created_at)}
                 </span>
               </div>

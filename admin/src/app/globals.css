@@ -68,7 +68,7 @@
 }
 
 body {
-  background-color: var(--color-navy);
-  color: var(--color-white);
+  background-color: var(--color-white);
+  color: var(--color-navy);
   font-family: var(--font-mono);
 }

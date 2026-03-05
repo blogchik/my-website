@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${ibmPlexMono.variable} font-mono antialiased bg-navy text-white min-h-screen`}
+        className={`${ibmPlexMono.variable} font-mono antialiased bg-white text-navy min-h-screen`}
       >
         {children}
       </body>
