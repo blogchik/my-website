@@ -45,6 +45,22 @@ services:
       - .env.dev
     restart: "no"
 
+  admin:
+    build:
+      target: development
+    command: pnpm dev
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env.dev
+    environment:
+      - WATCHPACK_POLLING=true
+    restart: "no"
+
   db:
     ports:
       - "5432:5432"

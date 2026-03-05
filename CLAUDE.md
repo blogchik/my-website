@@ -27,7 +27,11 @@ my-website/
 │   ├── alembic.ini              ← Alembic migration config
 │   ├── alembic/                 ← migration scripts
 │   └── src/app/                 ← FastAPI application code
-└── (admin/ — planned)
+├── admin/                       ← Next.js admin panel (GitHub OAuth)
+│   ├── Dockerfile               ← multi-stage: development / deps / builder / runner
+│   ├── src/
+│   └── public/
+└── (future services)
 ```
 
 ## Commands
@@ -51,6 +55,7 @@ my-website/
 | `make db-revision m="..."` | Create new Alembic migration |
 | `make db-shell` | Open PostgreSQL shell |
 | `make backend-logs` | Tail backend logs |
+| `make admin-logs` | Tail admin panel logs |
 | `make help` | List all commands |
 
 Without Makefile:
@@ -70,6 +75,14 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 - **Lint:** `pnpm lint`
 
 No test framework is configured.
+
+### Admin (`cd admin/`)
+
+- **Dev server:** `pnpm dev` (port 3001)
+- **Build:** `pnpm build`
+- **Lint:** `pnpm lint`
+
+Package manager: **pnpm**
 
 ### Backend (`cd backend/`)
 
@@ -105,11 +118,12 @@ CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then tr
 
 **Architecture:**
 - **Frontend app** → `ghcr.io/<owner>/my-website-frontend` → Dokploy application
+- **Admin app** → `ghcr.io/<owner>/my-website-admin` → Dokploy application
 - **Backend app** → `ghcr.io/<owner>/my-website-backend` → Dokploy application
 - **PostgreSQL** → Dokploy built-in database service
 - Traefik (Dokploy) handles SSL + routing
 
-**CI/CD flow:** `push to main` → lint both → security scan → build & push images → trigger Dokploy webhooks
+**CI/CD flow:** `push to main` → lint all three → security scan → build & push images → trigger Dokploy webhooks
 
 **GitHub Secrets required:**
 
@@ -117,6 +131,7 @@ CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then tr
 |--------|-------------|
 | `ENV_PROD` | Full `.env.prod` contents (backend env vars included) |
 | `DOKPLOY_WEBHOOK_FRONTEND` | Dokploy webhook URL for frontend app |
+| `DOKPLOY_WEBHOOK_ADMIN` | Dokploy webhook URL for admin app |
 | `DOKPLOY_WEBHOOK_BACKEND` | Dokploy webhook URL for backend app |
 
 **Backend env vars in Dokploy (Environment tab):**
@@ -205,8 +220,8 @@ REST API for abduroziq.uz. Built with Python 3.12, FastAPI, SQLAlchemy (async), 
 - `backend/src/app/database.py` — Async SQLAlchemy engine + session factory
 - `backend/src/app/models/` — SQLAlchemy ORM models (`ContactMessage`)
 - `backend/src/app/schemas/` — Pydantic request/response schemas
-- `backend/src/app/routers/` — API route handlers (`health`, `contact`)
-- `backend/src/app/services/` — Business logic (`email` via Resend SDK)
+- `backend/src/app/routers/` — API route handlers (`health`, `contact`, `admin`)
+- `backend/src/app/services/` — Business logic (`email` via Resend SDK, `auth` for admin JWT/OAuth)
 - `backend/src/app/middleware/` — Rate limiting via SlowAPI
 - `backend/alembic/` — Database migration scripts
 
@@ -216,6 +231,14 @@ REST API for abduroziq.uz. Built with Python 3.12, FastAPI, SQLAlchemy (async), 
 |--------|------|-------------|
 | `GET` | `/health` | Health check (DB connectivity, uptime) |
 | `POST` | `/contact` | Contact form submission (rate limited: 5/hour) |
+| `POST` | `/admin/auth/github/callback` | GitHub OAuth token exchange (rate limited: 10/hour) |
+| `POST` | `/admin/auth/refresh` | Refresh JWT access token (rate limited: 30/hour) |
+| `POST` | `/admin/auth/logout` | Clear refresh cookie (auth required) |
+| `GET` | `/admin/auth/me` | Get current admin info (auth required) |
+| `GET` | `/admin/health` | Health + message stats (auth required) |
+| `GET` | `/admin/contacts` | Paginated contact list with search (auth required) |
+| `GET` | `/admin/contacts/{id}` | Single contact message (auth required) |
+| `PATCH` | `/admin/contacts/{id}` | Mark read/unread (auth required) |
 | `GET` | `/docs` | Swagger UI (available in all environments) |
 | `GET` | `/redoc` | ReDoc (available in all environments) |
 
@@ -223,8 +246,9 @@ All endpoints are served from `api.abduroziq.uz` (production) or `localhost:4000
 
 ### Security
 
-- **CORS:** Only `CORS_ORIGIN` (frontend URL) is allowed
+- **CORS:** `CORS_ORIGIN` (frontend) + `ADMIN_CORS_ORIGIN` (admin panel) allowed
 - **Rate limiting:** Global 100 req/15min; contact endpoint 5 req/hour per IP
+- **Admin auth:** GitHub OAuth → JWT (HS256). Only `ADMIN_GITHUB_ID` allowed. Access token (15min) + HttpOnly refresh cookie (7d)
 - **Trusted hosts:** `API_DOMAIN` enforced via `TrustedHostMiddleware` in production
 - **Subdomain routing:** `api.abduroziq.uz` → backend (via Traefik/Nginx); backend not directly exposed
 
@@ -250,4 +274,43 @@ Backend port: 4000 (internal). Accessed via `api.abduroziq.uz` subdomain (Traefi
 - `resend` — email notifications
 - `slowapi` — rate limiting
 - `pydantic-settings` — environment configuration
+- `PyJWT` + `cryptography` — JWT token handling
+- `httpx` — GitHub OAuth HTTP calls
 - Package manager: **uv**
+
+## Admin architecture
+
+Admin panel for abduroziq.uz. Built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind CSS v4. Dark theme (navy bg).
+
+- `admin/src/app/` — App Router pages: login, callback, dashboard, contacts
+- `admin/src/components/` — Shared components (sidebar, status-badge, pagination, loading-skeleton)
+- `admin/src/lib/auth.ts` — GitHub OAuth helpers, token management (sessionStorage)
+- `admin/src/lib/api.ts` — API client with auto token refresh on 401
+
+### Auth flow
+
+1. User clicks "Sign in with GitHub" → redirects to GitHub OAuth
+2. GitHub redirects to `/callback` with code
+3. Frontend sends code to `POST /admin/auth/github/callback`
+4. Backend validates GitHub user ID matches `ADMIN_GITHUB_ID`
+5. Backend issues JWT access token (response body) + refresh token (HttpOnly cookie)
+6. Frontend stores access token in `sessionStorage`
+
+### Design
+
+- **Dark theme:** navy (#000022) background, white text, orange (#E28413) accents
+- **Font:** IBM Plex Mono (monospace throughout)
+- **Animations:** fade-up, fade-in, scale-in, slide-right
+
+### Deployment
+
+Same pattern as frontend: Next.js standalone output, multi-stage Docker build, port 3001.
+Accessed via `admin.abduroziq.uz` (Dokploy/Traefik routes to admin container).
+
+### Import alias
+
+`@/` maps to `admin/src/` (configured in `admin/tsconfig.json`).
+
+### Key dependencies
+
+Same as frontend: Next.js 16, React 19, Tailwind v4. Package manager: **pnpm**

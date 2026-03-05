@@ -5,7 +5,7 @@ Pydantic schemas for the contact endpoint.
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, computed_field
 
 
 class ContactRequest(BaseModel):
@@ -34,3 +34,9 @@ class ContactMessageOut(BaseModel):
     message: str
     created_at: datetime
     sent_at: datetime | None = None
+    read_at: datetime | None = None
+
+    @computed_field
+    @property
+    def is_read(self) -> bool:
+        return self.read_at is not None

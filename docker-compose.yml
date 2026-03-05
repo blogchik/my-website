@@ -38,6 +38,19 @@ services:
       retries: 3
       start_period: 15s
 
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
   db:
     image: postgres:18-alpine
     networks:

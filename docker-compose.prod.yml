@@ -36,6 +36,15 @@ services:
         python -m uvicorn src.app.main:app --host 0.0.0.0 --port 4000 --workers 2
       "
 
+  admin:
+    build:
+      target: runner
+    ports:
+      - "127.0.0.1:3001:3001"
+    env_file:
+      - .env.prod
+    restart: unless-stopped
+
   db:
     env_file:
       - .env.prod
@@ -56,6 +65,7 @@ services:
     depends_on:
       - frontend
       - backend
+      - admin
     restart: unless-stopped
 
   certbot:

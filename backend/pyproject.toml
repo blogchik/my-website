@@ -14,6 +14,9 @@ dependencies = [
     "resend>=2.5.0",
     "slowapi>=0.1.9",
     "python-multipart>=0.0.12",
+    "PyJWT>=2.9.0",
+    "httpx>=0.28.0",
+    "cryptography>=43.0",
 ]
 
 [dependency-groups]

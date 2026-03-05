@@ -3,7 +3,7 @@ PROD_COMPOSE := docker compose -f docker-compose.yml -f docker-compose.prod.yml
 .PHONY: dev dev-build dev-down dev-logs \
         prod prod-build prod-down prod-logs prod-restart \
         ssl-init ssl-renew \
-        db-migrate db-revision db-shell backend-logs \
+        db-migrate db-revision db-shell backend-logs admin-logs \
         help
 
 # ── Development ─────────────────────────────────────────────────────────────
@@ -59,6 +59,9 @@ db-shell:      ## Open PostgreSQL shell
 
 backend-logs:  ## Tail backend logs
 	docker compose logs -f backend
+
+admin-logs:    ## Tail admin panel logs
+	docker compose logs -f admin
 
 # ── Help ────────────────────────────────────────────────────────────────────
 

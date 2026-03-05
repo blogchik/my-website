@@ -44,6 +44,15 @@ class Settings(BaseSettings):
     contact_email_to: str = "blogchikuz@gmail.com"
     contact_email_from: str = "onboarding@resend.dev"
 
+    # ── Admin / Auth ─────────────────────────────────────
+    admin_github_id: str = ""
+    github_client_id: str = ""
+    github_client_secret: str = ""
+    jwt_secret: str = "dev-secret-change-in-prod"
+    jwt_access_expire_minutes: int = 15
+    jwt_refresh_expire_days: int = 7
+    admin_cors_origin: str = "http://localhost:3001"
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
@@ -52,6 +61,11 @@ class Settings(BaseSettings):
     def cors_origins(self) -> list[str]:
         """Parse comma-separated CORS origins."""
         return [origin.strip() for origin in self.cors_origin.split(",")]
+
+    @property
+    def admin_cors_origins(self) -> list[str]:
+        """Parse comma-separated admin CORS origins."""
+        return [origin.strip() for origin in self.admin_cors_origin.split(",") if origin.strip()]
 
     @property
     def allowed_hosts(self) -> list[str]:

@@ -20,7 +20,7 @@ from sqlalchemy import text
 from src.app.config import get_settings
 from src.app.database import async_session, engine
 from src.app.middleware.rate_limiter import limiter
-from src.app.routers import contact, health
+from src.app.routers import admin, contact, health
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -74,9 +74,9 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # ── CORS ───────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.cors_origins + settings.admin_cors_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -90,6 +90,7 @@ if settings.is_production:
 # ── Routers ────────────────────────────────────────────────────────────────
 app.include_router(health.router)
 app.include_router(contact.router)
+app.include_router(admin.router)
 
 
 # ── Global exception handler ──────────────────────────────────────────────

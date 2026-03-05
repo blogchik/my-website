@@ -27,6 +27,9 @@ class ContactMessage(Base):
     sent_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, default=None
     )
+    read_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, default=None
+    )
 
     def __repr__(self) -> str:
         return f"<ContactMessage(id={self.id}, name={self.name!r}, email={self.email!r})>"
