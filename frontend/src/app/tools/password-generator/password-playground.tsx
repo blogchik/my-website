@@ -261,7 +261,7 @@ export function PasswordPlayground() {
   return (
     <div className="animate-fade-up space-y-8" style={{ animationDelay: "0.2s" }}>
       {/* ── Two-column playground ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
 
         {/* ── Left: Parameters ── */}
         <div className="border border-navy/10 rounded-2xl p-5 space-y-6 h-fit">

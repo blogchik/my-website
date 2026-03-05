@@ -102,6 +102,32 @@ export const tools: Tool[] = [
       ],
     },
   },
+  {
+    slug: "hash-generator",
+    name: "Hash Generator",
+    description:
+      "Hash any string with MD5, SHA-1, SHA-256, SHA-384, or SHA-512. Multiple output formats, instant results.",
+    icon: "#️⃣",
+    category: "Generators",
+    banner: null,
+    seo: {
+      title: "Hash Generator — MD5, SHA-256, SHA-512 Online Free",
+      description:
+        "Free online hash generator. Compute MD5, SHA-1, SHA-256, SHA-384 and SHA-512 hashes instantly. Supports hex (lower/upper) and Base64 output. No sign-up required.",
+      keywords: [
+        "hash generator",
+        "sha256 generator",
+        "md5 hash generator",
+        "sha512 hash online",
+        "sha1 generator",
+        "string hash online",
+        "hash calculator",
+        "sha256 online",
+        "md5 checksum generator",
+        "cryptographic hash online",
+      ],
+    },
+  },
 ];
 
 /** Return tools grouped by category (preserves category declaration order). */

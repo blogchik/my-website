@@ -263,7 +263,8 @@ Each tool page consists of **common sections** (present on every tool) plus **to
 | Tool | Slug | Category |
 |------|------|----------|
 | UUID Generator | `uuid-generator` | Generators |
-| Password Generator | `password-generator` | Security |
+| Password Generator | `password-generator` | Generators |
+| Hash Generator | `hash-generator` | Generators |
 
 ### Files
 
@@ -276,9 +277,12 @@ frontend/src/
     ├── uuid-generator/
     │   ├── page.tsx                      ← /tools/uuid-generator (metadata + layout)
     │   └── uuid-playground.tsx           ← interactive client component
-    └── password-generator/
-        ├── page.tsx                      ← /tools/password-generator (metadata + layout)
-        └── password-playground.tsx       ← interactive client component
+    ├── password-generator/
+    │   ├── page.tsx                      ← /tools/password-generator (metadata + layout)
+    │   └── password-playground.tsx       ← interactive client component
+    └── hash-generator/
+        ├── page.tsx                      ← /tools/hash-generator (metadata + layout)
+        └── hash-playground.tsx           ← interactive client component (MD5 pure-JS + Web Crypto SHA)
 ```
 
 ## Backend architecture
