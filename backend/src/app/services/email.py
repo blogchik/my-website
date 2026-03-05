@@ -4,6 +4,7 @@ Email service — sends contact form notifications via Resend SDK.
 In development (no API key), messages are logged instead of sent.
 """
 
+import asyncio
 import html
 import logging
 
@@ -33,14 +34,15 @@ async def send_contact_email(name: str, email: str, message: str) -> bool:
     resend.api_key = settings.resend_api_key
 
     try:
-        resend.Emails.send(
+        await asyncio.to_thread(
+            resend.Emails.send,
             {
                 "from": settings.contact_email_from,
                 "to": [settings.contact_email_to],
                 "subject": f"New contact from {name}",
                 "reply_to": email,
                 "html": _build_email_html(name, email, message),
-            }
+            },
         )
         logger.info("Contact email sent for %s <%s>", name, email)
         return True

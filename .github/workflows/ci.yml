@@ -319,11 +319,28 @@ jobs:
       url: https://abduroziq.uz
 
     steps:
+      - name: Trigger Backend deployment
+        run: curl -sf -X POST "${{ secrets.DOKPLOY_WEBHOOK_BACKEND }}"
+
+      - name: Wait for backend to be healthy
+        run: |
+          echo "Waiting for backend to stabilize..."
+          sleep 20
+          for i in $(seq 1 12); do
+            if curl -sf https://api.abduroziq.uz/health > /dev/null; then
+              echo "Backend healthy after attempt $i"
+              break
+            fi
+            if [ "$i" -eq 12 ]; then
+              echo "Backend did not become healthy in time"
+              exit 1
+            fi
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+
       - name: Trigger Frontend deployment
-        run: curl -s -X POST "${{ secrets.DOKPLOY_WEBHOOK_FRONTEND }}"
+        run: curl -sf -X POST "${{ secrets.DOKPLOY_WEBHOOK_FRONTEND }}"
 
       - name: Trigger Admin deployment
-        run: curl -s -X POST "${{ secrets.DOKPLOY_WEBHOOK_ADMIN }}"
-
-      - name: Trigger Backend deployment
-        run: curl -s -X POST "${{ secrets.DOKPLOY_WEBHOOK_BACKEND }}"
+        run: curl -sf -X POST "${{ secrets.DOKPLOY_WEBHOOK_ADMIN }}"

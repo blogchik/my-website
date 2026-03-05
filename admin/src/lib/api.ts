@@ -44,6 +44,7 @@ export async function apiFetch(
     if (typeof window !== "undefined") {
       window.location.href = "/login";
     }
+    throw new Error("Unauthenticated");
   }
 
   return res;

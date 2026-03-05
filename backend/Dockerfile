@@ -67,4 +67,4 @@ USER appuser
 EXPOSE 4000
 ENV PORT=4000
 
-CMD ["sh", "-c", "python -m alembic upgrade head && python -m uvicorn src.app.main:app --host 0.0.0.0 --port 4000 --workers 2"]
+CMD ["sh", "-c", "python -m alembic upgrade head && python -m uvicorn src.app.main:app --host 0.0.0.0 --port 4000 --workers 1"]
