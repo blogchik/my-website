@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { LogoSymbol } from "@/components/icons/logo-symbol";
 import { AddCircleIcon } from "@/components/icons/add-circle";
-import { QuestionCircleIcon } from "@/components/icons/question-circle";
 import { NavigationMenu } from "@/components/navigation-menu";
 
 export function Header() {
@@ -44,13 +43,6 @@ export function Header() {
           >
             <AddCircleIcon width={32} height={32} />
           </button>
-          <Link
-            href="/about"
-            aria-label="About"
-            className="text-navy hover:text-orange hover:scale-110 transition-all duration-300"
-          >
-            <QuestionCircleIcon width={32} height={32} />
-          </Link>
         </div>
       </header>
 
