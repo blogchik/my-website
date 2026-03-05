@@ -2,7 +2,7 @@
 Pydantic schemas for admin endpoints.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 
 from src.app.schemas.contact import ContactMessageOut
 
@@ -38,6 +38,7 @@ class ContactMessageListResponse(BaseModel):
     page: int
     page_size: int
 
+    @computed_field
     @property
     def total_pages(self) -> int:
         return (self.total + self.page_size - 1) // self.page_size

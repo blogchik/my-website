@@ -15,6 +15,10 @@ from src.app.config import get_settings
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
+# Set once at import time — avoids mutating global SDK state on every call.
+if settings.resend_api_key:
+    resend.api_key = settings.resend_api_key
+
 
 async def send_contact_email(name: str, email: str, message: str) -> bool:
     """
@@ -30,8 +34,6 @@ async def send_contact_email(name: str, email: str, message: str) -> bool:
             message[:100],
         )
         return False
-
-    resend.api_key = settings.resend_api_key
 
     try:
         await asyncio.to_thread(

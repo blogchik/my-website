@@ -68,9 +68,17 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    const poll = () => {
+      if (document.visibilityState !== "hidden") fetchData();
+    };
+
     fetchData();
-    const interval = setInterval(fetchData, 30_000);
-    return () => clearInterval(interval);
+    const interval = setInterval(poll, 30_000);
+    document.addEventListener("visibilitychange", poll);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", poll);
+    };
   }, [fetchData]);
 
   if (loading) {

@@ -27,7 +27,7 @@ function CallbackHandler() {
     clearOAuthState();
 
     if (!savedState || savedState !== returnedState) {
-      router.push("/login");
+      router.replace("/login?error=state_mismatch");
       return;
     }
 

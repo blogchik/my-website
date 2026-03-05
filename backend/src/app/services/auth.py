@@ -7,6 +7,7 @@ Security model:
 - Bearer header for API calls → inherently CSRF-immune
 """
 
+import hashlib
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -23,6 +24,11 @@ GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USER_URL = "https://api.github.com/user"
 
 security = HTTPBearer()
+
+# Derive separate signing keys for access and refresh tokens so a leaked
+# access token cannot be used to forge a refresh token (and vice versa).
+_ACCESS_SECRET = hashlib.sha256(f"{settings.jwt_secret}:access".encode()).hexdigest()
+_REFRESH_SECRET = hashlib.sha256(f"{settings.jwt_secret}:refresh".encode()).hexdigest()
 
 
 async def exchange_github_code(code: str) -> dict:
@@ -98,7 +104,7 @@ def create_access_token(github_id: str, github_login: str) -> str:
         "exp": now + timedelta(minutes=settings.jwt_access_expire_minutes),
         "jti": str(uuid.uuid4()),
     }
-    return jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
+    return jwt.encode(payload, _ACCESS_SECRET, algorithm="HS256")
 
 
 def create_refresh_token(github_id: str) -> str:
@@ -111,7 +117,7 @@ def create_refresh_token(github_id: str) -> str:
         "exp": now + timedelta(days=settings.jwt_refresh_expire_days),
         "jti": str(uuid.uuid4()),
     }
-    return jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
+    return jwt.encode(payload, _REFRESH_SECRET, algorithm="HS256")
 
 
 def verify_token(token: str, expected_type: str) -> dict:
@@ -119,8 +125,9 @@ def verify_token(token: str, expected_type: str) -> dict:
 
     Raises HTTPException 401 on expired, invalid, or wrong-type tokens.
     """
+    secret = _ACCESS_SECRET if expected_type == "access" else _REFRESH_SECRET
     try:
-        payload = jwt.decode(token, settings.jwt_secret, algorithms=["HS256"])
+        payload = jwt.decode(token, secret, algorithms=["HS256"])
     except jwt.ExpiredSignatureError as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

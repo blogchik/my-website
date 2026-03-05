@@ -200,8 +200,15 @@ async def list_contacts(
     count_query = select(func.count(ContactMessage.id))
 
     if search:
-        search_filter = ContactMessage.name.ilike(f"%{search}%") | ContactMessage.email.ilike(
-            f"%{search}%"
+
+        def _escape_like(value: str) -> str:
+            return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+        pattern = f"%{_escape_like(search)}%"
+        search_filter = (
+            ContactMessage.name.ilike(pattern)
+            | ContactMessage.email.ilike(pattern)
+            | ContactMessage.message.ilike(pattern)
         )
         query = query.where(search_filter)
         count_query = count_query.where(search_filter)

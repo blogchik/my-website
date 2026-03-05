@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const INTERACTIVE_SELECTOR = 'a, button, input, textarea, select, [role="button"]';
 
@@ -8,8 +8,14 @@ export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef(0);
+  // Lazy initializer runs client-side only — avoids setState-in-effect lint issue
+  const [isTouch] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches,
+  );
 
   useEffect(() => {
+    if (isTouch) return;
+
     const dot = dotRef.current;
     const ring = ringRef.current;
     if (!dot || !ring) return;
@@ -80,7 +86,9 @@ export function CustomCursor() {
       document.removeEventListener("mouseout", onMouseOut);
       cancelAnimationFrame(frameRef.current);
     };
-  }, []);
+  }, [isTouch]);
+
+  if (isTouch) return null;
 
   return (
     <>

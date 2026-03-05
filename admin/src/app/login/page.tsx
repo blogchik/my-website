@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import {
   isAuthenticated,
   generateState,
@@ -9,8 +10,15 @@ import {
   buildGitHubOAuthUrl,
 } from "@/lib/auth";
 
-export default function LoginPage() {
+const ERROR_MESSAGES: Record<string, string> = {
+  state_mismatch: "Security check failed. Please try again.",
+};
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
+  const errorMessage = errorParam ? (ERROR_MESSAGES[errorParam] ?? "Login failed. Please try again.") : null;
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -19,6 +27,10 @@ export default function LoginPage() {
   }, [router]);
 
   const handleLogin = () => {
+    if (!process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID) {
+      alert("NEXT_PUBLIC_GITHUB_CLIENT_ID is not configured.");
+      return;
+    }
     const state = generateState();
     saveOAuthState(state);
     window.location.href = buildGitHubOAuthUrl(state);
@@ -35,6 +47,10 @@ export default function LoginPage() {
           </h1>
           <p className="text-navy/30 text-sm mt-2">abduroziq.uz</p>
         </div>
+
+        {errorMessage && (
+          <p className="text-red-400 text-sm">{errorMessage}</p>
+        )}
 
         <button
           onClick={handleLogin}
@@ -60,5 +76,13 @@ export default function LoginPage() {
         <p className="text-navy/20 text-xs">authorized access only</p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

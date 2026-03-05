@@ -1,7 +1,7 @@
 FROM node:22-alpine AS base
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.6.5 --activate
 
 # --- Development ---
 # Used by docker-compose.override.yml (target: development)

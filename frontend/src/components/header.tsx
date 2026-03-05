@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { LogoSymbol } from "@/components/icons/logo-symbol";
 import { AddCircleIcon } from "@/components/icons/add-circle";
@@ -9,10 +9,17 @@ import { NavigationMenu } from "@/components/navigation-menu";
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-start justify-between px-6 lg:px-16 py-6">
+      <header className={`fixed top-0 left-0 right-0 z-50 flex items-start justify-between px-6 lg:px-16 py-6 transition-all duration-300 ${scrolled ? "backdrop-blur-md bg-white/80" : ""}`}>
         <Link href="/" className="block group animate-fade-in">
           <div className="flex items-center gap-2 text-lg font-bold text-navy tracking-tight">
             <LogoSymbol

@@ -44,8 +44,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-
 # Create non-root user
 RUN groupadd --system --gid 1001 appgroup \
     && useradd --system --uid 1001 --gid appgroup appuser
