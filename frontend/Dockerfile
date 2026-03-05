@@ -28,6 +28,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ARG BACKEND_URL
+ENV BACKEND_URL=$BACKEND_URL
 RUN pnpm build
 
 # --- Production ---

@@ -21,6 +21,26 @@ services:
       - .env.prod
     restart: unless-stopped
 
+  backend:
+    build:
+      target: runner
+    ports:
+      - "127.0.0.1:4000:4000"
+    env_file:
+      - .env.prod
+    restart: unless-stopped
+    # Run migrations before starting the server
+    command: >
+      sh -c "
+        python -m alembic upgrade head &&
+        python -m uvicorn src.app.main:app --host 0.0.0.0 --port 4000 --workers 2
+      "
+
+  db:
+    env_file:
+      - .env.prod
+    restart: unless-stopped
+
   nginx:
     image: nginx:1.27-alpine
     ports:
@@ -35,6 +55,7 @@ services:
       - app-network
     depends_on:
       - frontend
+      - backend
     restart: unless-stopped
 
   certbot:

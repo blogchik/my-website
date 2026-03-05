@@ -27,3 +27,29 @@ services:
     environment:
       - WATCHPACK_POLLING=true
     restart: "no"
+
+  backend:
+    build:
+      target: development
+    command: >
+      sh -c "
+        uv run alembic upgrade head &&
+        uv run uvicorn src.app.main:app --reload --host 0.0.0.0 --port 4000
+      "
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env.dev
+    restart: "no"
+
+  db:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: devpass
+      POSTGRES_DB: mywebsite
+    restart: "no"
