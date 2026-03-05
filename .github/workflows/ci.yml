@@ -220,6 +220,9 @@ jobs:
     needs: [build-frontend, build-backend]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://abduroziq.uz
 
     steps:
       - name: Trigger Frontend deployment
