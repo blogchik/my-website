@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     # ── CORS ───────────────────────────────────────────────
     cors_origin: str = "http://localhost:3000"
 
+    # ── Trusted hosts ──────────────────────────────────────
+    api_domain: str = "localhost"
+
     # ── Email (Resend) ─────────────────────────────────────
     resend_api_key: str = ""
     contact_email_to: str = "blogchikuz@gmail.com"
@@ -49,6 +52,11 @@ class Settings(BaseSettings):
     def cors_origins(self) -> list[str]:
         """Parse comma-separated CORS origins."""
         return [origin.strip() for origin in self.cors_origin.split(",")]
+
+    @property
+    def allowed_hosts(self) -> list[str]:
+        """Hosts allowed by TrustedHostMiddleware (production only)."""
+        return [self.api_domain]
 
 
 @lru_cache

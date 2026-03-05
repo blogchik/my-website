@@ -1,5 +1,5 @@
 """
-Health check endpoint — GET /api/health
+Health check endpoint — GET /health
 
 Used by Docker healthcheck and external monitoring.
 Verifies database connectivity and reports server status.
@@ -16,7 +16,7 @@ from src.app.database import async_session
 from src.app.middleware.rate_limiter import limiter
 from src.app.schemas.health import HealthResponse
 
-router = APIRouter(prefix="/api", tags=["health"])
+router = APIRouter(tags=["health"])
 settings = get_settings()
 
 # Track server start time for uptime calculation

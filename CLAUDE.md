@@ -14,7 +14,7 @@ my-website/
 ├── Makefile                     ← convenience commands
 ├── nginx/
 │   ├── nginx.conf
-│   └── conf.d/app.conf          ← HTTP→HTTPS redirect, proxy to frontend + backend
+│   └── conf.d/app.conf          ← HTTP→HTTPS redirect, proxy frontend + api subdomain
 ├── scripts/
 │   └── init-letsencrypt.sh      ← one-time SSL cert setup (run on VPS)
 ├── frontend/                    ← Next.js personal website
@@ -122,29 +122,32 @@ CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then tr
 **Backend env vars in Dokploy (Environment tab):**
 
 | Variable | Example |
-|----------|---------|
+|----------|--------- |
 | `DATABASE_URL` | `postgresql://user:pass@db-host:5432/mydb` (from Dokploy DB) |
 | `RESEND_API_KEY` | `re_xxxxxxxxxxxx` |
-| `CORS_ORIGIN` | `https://abduroziq.com` |
+| `CORS_ORIGIN` | `https://abduroziq.uz` |
+| `API_DOMAIN` | `api.abduroziq.uz` |
 | `ENVIRONMENT` | `production` |
-| `CONTACT_EMAIL_TO` | `hello@abduroziq.com` |
-| `CONTACT_EMAIL_FROM` | `noreply@abduroziq.com` |
+| `CONTACT_EMAIL_TO` | `hello@abduroziq.uz` |
+| `CONTACT_EMAIL_FROM` | `noreply@abduroziq.uz` |
 
 **Frontend env vars (build args via `ENV_PROD` secret):**
 
 | Variable | Example |
 |----------|---------|
-| `NEXT_PUBLIC_SITE_URL` | `https://abduroziq.com` |
-| `BACKEND_URL` | `http://<backend-app-name>:4000` |
+| `NEXT_PUBLIC_SITE_URL` | `https://abduroziq.uz` |
+| `NEXT_PUBLIC_API_URL` | `https://api.abduroziq.uz` |
 
-**Frontend → Backend proxy:** Next.js rewrites `/api/*` to `BACKEND_URL` (baked at build time). The `BACKEND_URL` must match the backend container name in Dokploy's internal network.
+**Frontend → Backend:** Client-side `fetch()` calls `NEXT_PUBLIC_API_URL` directly (baked at build time). No server-side proxy. CORS on the backend allows the frontend origin.
+
+**Backend domain:** Dokploy routes `api.abduroziq.uz` → backend container via Traefik. Add `api.abduroziq.uz` as the domain in Dokploy backend app settings.
 
 ### First-time VPS setup (Docker Compose — alternative to Dokploy)
 
 1. Fill in `.env.prod` (copy from `.env.example`, set `DOMAIN`, `CERTBOT_EMAIL`, etc.)
 2. Replace `yourdomain.com` in `nginx/conf.d/app.conf` with actual domain
-3. Ensure DNS A record → VPS IP, ports 80 and 443 open
-4. Run `make ssl-init` — obtains first certificate
+3. Ensure DNS A records for both `yourdomain.com` and `api.yourdomain.com` → VPS IP, ports 80 and 443 open
+4. Run `make ssl-init` — obtains first certificate (must cover both domains)
 5. Run `make prod` — starts all services
 
 ## Frontend architecture
@@ -195,7 +198,7 @@ Site URL from `NEXT_PUBLIC_SITE_URL` env var.
 
 ## Backend architecture
 
-REST API for abduroziq.com. Built with Python 3.12, FastAPI, SQLAlchemy (async), Alembic, and Pydantic.
+REST API for abduroziq.uz. Built with Python 3.12, FastAPI, SQLAlchemy (async), Alembic, and Pydantic.
 
 - `backend/src/app/main.py` — FastAPI app entry point (middleware, routers, lifespan)
 - `backend/src/app/config.py` — Pydantic Settings (validates env vars at startup)
@@ -211,15 +214,19 @@ REST API for abduroziq.com. Built with Python 3.12, FastAPI, SQLAlchemy (async),
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/api/health` | Health check (DB connectivity, uptime) |
-| `POST` | `/api/contact` | Contact form submission (rate limited: 5/hour) |
+| `GET` | `/health` | Health check (DB connectivity, uptime) |
+| `POST` | `/contact` | Contact form submission (rate limited: 5/hour) |
+| `GET` | `/docs` | Swagger UI (available in all environments) |
+| `GET` | `/redoc` | ReDoc (available in all environments) |
+
+All endpoints are served from `api.abduroziq.uz` (production) or `localhost:4000` (dev).
 
 ### Security
 
 - **CORS:** Only `CORS_ORIGIN` (frontend URL) is allowed
 - **Rate limiting:** Global 100 req/15min; contact endpoint 5 req/hour per IP
-- **Trusted hosts:** Enabled in production
-- **Nginx proxy:** All `/api/` requests routed to backend; backend not publicly exposed
+- **Trusted hosts:** `API_DOMAIN` enforced via `TrustedHostMiddleware` in production
+- **Subdomain routing:** `api.abduroziq.uz` → backend (via Traefik/Nginx); backend not directly exposed
 
 ### Database
 
@@ -233,7 +240,7 @@ Docker multi-stage build (`python:3.12-slim`). Three stages:
 - `deps` — production deps only (`uv sync --no-dev`)
 - `runner` — non-root user, `uvicorn` with 2 workers (used by `docker-compose.prod.yml`)
 
-Backend port: 4000 (internal, not publicly exposed). Nginx proxies `/api/` to `backend:4000`.
+Backend port: 4000 (internal). Accessed via `api.abduroziq.uz` subdomain (Traefik/Nginx routes to `backend:4000`).
 
 ### Key dependencies
 

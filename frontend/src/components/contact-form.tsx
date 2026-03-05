@@ -14,8 +14,10 @@ export function ContactForm() {
 
     setStatus("sending");
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(`${apiUrl}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

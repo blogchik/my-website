@@ -1,5 +1,5 @@
 """
-Contact form endpoint — POST /api/contact
+Contact form endpoint — POST /contact
 
 Validates input, saves to database, and sends notification email via Resend.
 Stricter rate limit: 5 requests per hour per IP to prevent spam.
@@ -19,7 +19,7 @@ from src.app.services.email import send_contact_email
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api", tags=["contact"])
+router = APIRouter(tags=["contact"])
 
 
 @router.post("/contact", response_model=ContactResponse, status_code=201)

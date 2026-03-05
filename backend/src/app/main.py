@@ -58,12 +58,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 # ── Create FastAPI app ─────────────────────────────────────────────────────
 app = FastAPI(
-    title="abduroziq.com API",
+    title="abduroziq.uz API",
     description="Backend API for personal portfolio website",
     version="0.1.0",
-    docs_url="/api/docs" if not settings.is_production else None,
-    redoc_url="/api/redoc" if not settings.is_production else None,
-    openapi_url="/api/openapi.json" if not settings.is_production else None,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
     lifespan=lifespan,
 )
 
@@ -84,7 +84,7 @@ app.add_middleware(
 if settings.is_production:
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=settings.cors_origins,
+        allowed_hosts=settings.allowed_hosts,
     )
 
 # ── Routers ────────────────────────────────────────────────────────────────
