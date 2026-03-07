@@ -148,7 +148,6 @@ export function Globe() {
         // Update markers and fill pre-allocated output array in one pass
         const markers = pulsingMarkersRef.current;
         const output = markerOutputRef.current;
-        output.length = markers.length;
         let outputCount = 0;
 
         for (const m of markers) {
@@ -168,9 +167,7 @@ export function Globe() {
           }
         }
 
-        // Truncate to active count without reallocating
-        output.length = outputCount;
-        state.markers = output;
+        state.markers = output.slice(0, outputCount);
       },
     });
   }, [syncCanvasSize]);
