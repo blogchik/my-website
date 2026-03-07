@@ -11,20 +11,10 @@ const locations: [number, number][] = [
   [35.6762, 139.6503], // Tokyo
   [51.5074, -0.1278],  // London
   [-33.8688, 151.2093],// Sydney
-  [55.7558, 37.6173],  // Moscow
   [1.3521, 103.8198],  // Singapore
-  [37.5665, 126.978],  // Seoul
   [25.2048, 55.2708],  // Dubai
   [-23.5505, -46.6333],// São Paulo
-  [28.6139, 77.209],   // Delhi
-  [30.0444, 31.2357],  // Cairo
-  [39.9042, 116.4074], // Beijing
   [34.0522, -118.2437],// Los Angeles
-  [52.52, 13.405],     // Berlin
-  [43.6532, -79.3832], // Toronto
-  [-1.2921, 36.8219],  // Nairobi
-  [59.3293, 18.0686],  // Stockholm
-  [13.7563, 100.5018], // Bangkok
 ];
 
 // Each marker has its own independent pulse cycle
@@ -90,7 +80,7 @@ export function Globe() {
     const rawHeight = Math.round(cssHeight * dpr);
 
     // Cap physical resolution — globe is a decorative bg at 40% opacity
-    const MAX_PX = 1200;
+    const MAX_PX = 1000;
     const capScale = Math.min(1, MAX_PX / Math.max(rawWidth, rawHeight));
     const width = Math.round(rawWidth * capScale);
     const height = Math.round(rawHeight * capScale);
