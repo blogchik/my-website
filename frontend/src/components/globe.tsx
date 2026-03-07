@@ -52,7 +52,7 @@ function getMapSamples(): number {
     window.devicePixelRatio <= 1 ||
     (typeof navigator.hardwareConcurrency !== "undefined" &&
       navigator.hardwareConcurrency <= 4);
-  return isLowEnd ? 6000 : 8000;
+  return isLowEnd ? 16000 : 20000;
 }
 
 // Angular velocity: same as 0.002 rad/frame @ 60 fps, but frame-rate independent
@@ -86,9 +86,17 @@ export function Globe() {
     }
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const width = Math.round(cssWidth * dpr);
-    const height = Math.round(cssHeight * dpr);
-    const dprChanged = renderSizeRef.current.dpr !== dpr;
+    const rawWidth = Math.round(cssWidth * dpr);
+    const rawHeight = Math.round(cssHeight * dpr);
+
+    // Cap physical resolution — globe is a decorative bg at 40% opacity
+    const MAX_PX = 1200;
+    const capScale = Math.min(1, MAX_PX / Math.max(rawWidth, rawHeight));
+    const width = Math.round(rawWidth * capScale);
+    const height = Math.round(rawHeight * capScale);
+    const effectiveDpr = cssWidth > 0 ? width / cssWidth : 1;
+
+    const dprChanged = renderSizeRef.current.dpr !== effectiveDpr;
 
     if (canvasRef.current.width !== width) {
       canvasRef.current.width = width;
@@ -97,7 +105,7 @@ export function Globe() {
       canvasRef.current.height = height;
     }
 
-    renderSizeRef.current = { width, height, dpr };
+    renderSizeRef.current = { width, height, dpr: effectiveDpr };
 
     return { hasSize: true, dprChanged };
   }, []);
@@ -167,7 +175,11 @@ export function Globe() {
           }
         }
 
-        state.markers = output.slice(0, outputCount);
+        // Zero-fill unused slots instead of resizing array (avoids GC)
+        for (let i = outputCount; i < output.length; i++) {
+          output[i].size = 0;
+        }
+        state.markers = output;
       },
     });
   }, [syncCanvasSize]);
