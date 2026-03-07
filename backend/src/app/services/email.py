@@ -59,7 +59,7 @@ def _build_email_html(name: str, email: str, message: str) -> str:
     safe_email = html.escape(email)
     safe_message = html.escape(message).replace("\n", "<br>")
     return f"""
-    <div style="font-family: 'IBM Plex Mono', monospace; max-width: 600px; margin: 0 auto;">
+    <div style="font-family: 'Bricolage Grotesque', sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #000022;">New Contact Form Submission</h2>
         <hr style="border: 1px solid #E28413;" />
         <p><strong>Name:</strong> {safe_name}</p>

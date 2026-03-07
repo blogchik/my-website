@@ -5,7 +5,7 @@
   --color-orange: #E28413;
   --color-navy: #000022;
 
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-mono: "Bricolage Grotesque", sans-serif;
 
   --animate-fade-up: fade-up 0.6s ease-out both;
   --animate-fade-in: fade-in 0.5s ease-out both;
@@ -90,7 +90,7 @@ body {
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  transform: translate(-50%, -50%);
+  will-change: transform;
   transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
 }
 
@@ -105,7 +105,7 @@ body {
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
-  transform: translate(-50%, -50%);
+  will-change: transform;
   transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
   opacity: 0.5;
 }
@@ -134,6 +134,13 @@ body {
   width: 28px;
   height: 28px;
   opacity: 0.8;
+}
+
+/* Header backdrop blur — toggled via JS classList, bypasses React re-render */
+.header-scrolled {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 /* Hide custom cursor on touch devices */

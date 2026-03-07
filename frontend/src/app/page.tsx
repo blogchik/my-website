@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { Globe } from "@/components/globe";
-import { ArrowRightUpIcon } from "@/components/icons/arrow-right-up";
+import { PrimaryLink } from "@/components/primary-button";
 
 export default function HomePage() {
   return (
@@ -20,16 +19,13 @@ export default function HomePage() {
           Internet.
         </h1>
 
-        <Link
+        <PrimaryLink
           href="/contact"
-          className="mt-8 inline-flex items-center gap-3 bg-orange rounded-full pl-6 pr-2 py-2 font-medium text-navy group hover:shadow-lg hover:shadow-orange/25 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 animate-fade-up"
+          className="mt-8 animate-fade-up"
           style={{ animationDelay: "0.2s" }}
         >
-          <span>Let&apos;s Connect</span>
-          <span className="bg-navy rounded-full p-2 flex items-center justify-center group-hover:rotate-45 transition-transform duration-300">
-            <ArrowRightUpIcon width={20} height={20} className="text-orange" />
-          </span>
-        </Link>
+          Let&apos;s Connect
+        </PrimaryLink>
       </div>
     </section>
   );

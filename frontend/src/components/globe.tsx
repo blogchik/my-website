@@ -46,12 +46,32 @@ function createPulsingMarkers(): PulsingMarker[] {
   }));
 }
 
+// Adaptive mapSamples: lower on low-end/mobile to reduce GPU load
+function getMapSamples(): number {
+  const isLowEnd =
+    window.devicePixelRatio <= 1 ||
+    (typeof navigator.hardwareConcurrency !== "undefined" &&
+      navigator.hardwareConcurrency <= 4);
+  return isLowEnd ? 6000 : 8000;
+}
+
+// Angular velocity: same as 0.002 rad/frame @ 60 fps, but frame-rate independent
+const PHI_PER_MS = 0.002 * (60 / 1000); // 0.00012 rad/ms
+
 export function Globe() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const globeRef = useRef<ReturnType<typeof createGlobe> | null>(null);
   const pulsingMarkersRef = useRef(createPulsingMarkers());
   const phiRef = useRef(0);
   const renderSizeRef = useRef({ width: 0, height: 0, dpr: 1 });
+
+  // Pre-allocated output array — reused every frame to avoid GC pressure
+  const markerOutputRef = useRef(
+    locations.map((location) => ({ location, size: 0 }))
+  );
+
+  // Timestamp for frame-rate independent rotation
+  const lastTimestampRef = useRef(0);
 
   const syncCanvasSize = useCallback(() => {
     if (!canvasRef.current) {
@@ -91,6 +111,9 @@ export function Globe() {
       globeRef.current.destroy();
     }
 
+    // Reset timestamp so the first frame doesn't get a stale delta
+    lastTimestampRef.current = 0;
+
     const { width, height, dpr } = renderSizeRef.current;
 
     globeRef.current = createGlobe(canvasRef.current, {
@@ -101,7 +124,7 @@ export function Globe() {
       theta: 0.25,
       dark: 0,
       diffuse: 0.8,
-      mapSamples: 16000,
+      mapSamples: getMapSamples(),
       mapBrightness: 3,
       baseColor: [1, 1, 1],
       markerColor: [0.886, 0.518, 0.075], // #E28413
@@ -110,33 +133,44 @@ export function Globe() {
       offset: [0, 0],
       markers: [],
       onRender: (state) => {
+        // Frame-rate independent rotation
+        const now = performance.now();
+        const delta = lastTimestampRef.current === 0
+          ? 16.67
+          : now - lastTimestampRef.current;
+        lastTimestampRef.current = now;
+        phiRef.current += PHI_PER_MS * Math.min(delta, 50);
+
         state.phi = phiRef.current;
         state.width = renderSizeRef.current.width;
         state.height = renderSizeRef.current.height;
-        phiRef.current += 0.002;
 
+        // Update markers and fill pre-allocated output array in one pass
         const markers = pulsingMarkersRef.current;
+        const output = markerOutputRef.current;
+        output.length = markers.length;
+        let outputCount = 0;
 
-        // Update each marker independently
         for (const m of markers) {
           m.phase += m.speed;
 
           if (m.phase >= 1) {
             m.phase = 0;
-            // Randomly toggle active state
             m.active = Math.random() > 0.5;
             m.speed = 0.002 + Math.random() * 0.004;
             m.maxSize = 0.03 + Math.random() * 0.03;
           }
+
+          if (m.active) {
+            output[outputCount].location = m.location;
+            output[outputCount].size = m.maxSize * Math.sin(m.phase * Math.PI);
+            outputCount++;
+          }
         }
 
-        // Smooth sine-based pulse: 0 → peak → 0
-        state.markers = markers
-          .filter((m) => m.active)
-          .map((m) => ({
-            location: m.location,
-            size: m.maxSize * Math.sin(m.phase * Math.PI),
-          }));
+        // Truncate to active count without reallocating
+        output.length = outputCount;
+        state.markers = output;
       },
     });
   }, [syncCanvasSize]);
@@ -145,7 +179,7 @@ export function Globe() {
     initGlobe();
 
     let resizeFrame = 0;
-    const observer = new ResizeObserver(() => {
+    const resizeObserver = new ResizeObserver(() => {
       cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(() => {
         const { hasSize, dprChanged } = syncCanvasSize();
@@ -157,7 +191,7 @@ export function Globe() {
     });
 
     if (canvasRef.current) {
-      observer.observe(canvasRef.current);
+      resizeObserver.observe(canvasRef.current);
     }
 
     // Pause when tab is hidden, resume when visible
@@ -173,9 +207,29 @@ export function Globe() {
     }
     document.addEventListener("visibilitychange", onVisibilityChange);
 
+    // Pause rendering when globe is scrolled out of view
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!globeRef.current) initGlobe();
+        } else {
+          if (globeRef.current) {
+            globeRef.current.destroy();
+            globeRef.current = null;
+          }
+        }
+      },
+      { threshold: 0.01 }
+    );
+
+    if (canvasRef.current) {
+      intersectionObserver.observe(canvasRef.current);
+    }
+
     return () => {
       cancelAnimationFrame(resizeFrame);
-      observer.disconnect();
+      resizeObserver.disconnect();
+      intersectionObserver.disconnect();
       document.removeEventListener("visibilitychange", onVisibilityChange);
       if (globeRef.current) {
         globeRef.current.destroy();

@@ -31,15 +31,13 @@ export function CustomCursor() {
     function onMouseMove(e: MouseEvent) {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      dot!.style.left = `${mouseX}px`;
-      dot!.style.top = `${mouseY}px`;
+      dot!.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
     }
 
     function animate() {
       ringX += (mouseX - ringX) * 0.15;
       ringY += (mouseY - ringY) * 0.15;
-      ring!.style.left = `${ringX}px`;
-      ring!.style.top = `${ringY}px`;
+      ring!.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
       frameRef.current = requestAnimationFrame(animate);
     }
 

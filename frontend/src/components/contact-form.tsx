@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ArrowRightUpIcon } from "@/components/icons/arrow-right-up";
+import { PrimaryButton } from "@/components/primary-button";
 
 export function ContactForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -119,17 +119,13 @@ export function ContactForm() {
         </p>
       )}
 
-      <button
-        type="submit"
+      <PrimaryButton
         disabled={status === "sending"}
-        className="inline-flex items-center gap-3 bg-orange rounded-full pl-6 pr-2 py-2 font-medium text-navy group hover:shadow-lg hover:shadow-orange/25 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 cursor-pointer animate-fade-up disabled:opacity-50 disabled:pointer-events-none"
+        className="animate-fade-up"
         style={{ animationDelay: "0.4s" }}
       >
-        <span>{status === "sending" ? "Sending..." : "Send Message"}</span>
-        <span className="bg-navy rounded-full p-2 flex items-center justify-center group-hover:rotate-45 transition-transform duration-300">
-          <ArrowRightUpIcon width={20} height={20} className="text-orange" />
-        </span>
-      </button>
+        {status === "sending" ? "Sending..." : "Send Message"}
+      </PrimaryButton>
     </form>
   );
 }
