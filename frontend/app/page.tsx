@@ -1,14 +1,17 @@
 "use client"
 
+import { useState } from "react"
 import { Menu01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { motion } from "motion/react"
 import { AboutCard } from "@/components/about-card"
 import { BottomDock } from "@/components/bottom-dock"
+import { CommandPalette } from "@/components/command-palette"
 import { useSound } from "@/components/sound-provider"
 
 export default function Page() {
   const { playClick } = useSound()
+  const [commandOpen, setCommandOpen] = useState(false)
 
   return (
     <main className="flex min-h-svh items-center justify-center px-8">
@@ -37,7 +40,8 @@ export default function Page() {
       </motion.button>
 
       <AboutCard />
-      <BottomDock />
+      <BottomDock onSearchClick={() => setCommandOpen(true)} />
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
     </main>
   )
 }

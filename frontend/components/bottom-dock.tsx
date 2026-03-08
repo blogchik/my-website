@@ -9,7 +9,11 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useSound } from "@/components/sound-provider"
 
-export function BottomDock() {
+interface BottomDockProps {
+  onSearchClick?: () => void
+}
+
+export function BottomDock({ onSearchClick }: BottomDockProps) {
   const { enabled, toggle, playClick } = useSound()
 
   return (
@@ -59,7 +63,10 @@ export function BottomDock() {
       <motion.button
         type="button"
         className="flex h-[34px] items-center gap-1.5 rounded-lg border border-border px-2.5 text-foreground transition-colors hover:text-primary"
-        onClick={playClick}
+        onClick={() => {
+          playClick()
+          onSearchClick?.()
+        }}
         whileHover="hover"
         whileTap="tap"
       >
