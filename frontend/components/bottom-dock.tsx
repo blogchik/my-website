@@ -15,11 +15,10 @@ export function BottomDock() {
         type="button"
         className="flex h-[34px] w-[38px] items-center justify-center rounded-lg border border-border text-foreground transition-colors hover:text-primary"
         aria-label="Music"
-        whileHover={{ scale: 1.06 }}
-        whileTap={{ scale: 0.94 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        whileHover="hover"
+        whileTap="tap"
       >
-        <svg
+        <motion.svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
           height="18"
@@ -29,21 +28,25 @@ export function BottomDock() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          variants={{
+            hover: { y: -2 },
+            tap: { scale: 0.85 },
+          }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
         >
           <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
           <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-        </svg>
+        </motion.svg>
       </motion.button>
 
       {/* Search / Command */}
       <motion.button
         type="button"
         className="flex h-[34px] items-center gap-1.5 rounded-lg border border-border px-2.5 text-foreground transition-colors hover:text-primary"
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.96 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        whileHover="hover"
+        whileTap="tap"
       >
-        <svg
+        <motion.svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
           height="18"
@@ -53,10 +56,15 @@ export function BottomDock() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          variants={{
+            hover: { rotate: -15 },
+            tap: { scale: 0.85 },
+          }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.3-4.3" />
-        </svg>
+        </motion.svg>
 
         {/* Desktop: keyboard shortcuts */}
         <span className="hidden items-center gap-1 sm:flex">

@@ -14,11 +14,11 @@ export default function Page() {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.96 }}
+        whileHover="hover"
+        whileTap="tap"
       >
         Menu
-        <svg
+        <motion.svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
           height="18"
@@ -28,11 +28,16 @@ export default function Page() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          variants={{
+            hover: { rotate: 90 },
+            tap: { scale: 0.85 },
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 15 }}
         >
           <line x1="4" x2="20" y1="12" y2="12" />
           <line x1="4" x2="20" y1="6" y2="6" />
           <line x1="4" x2="20" y1="18" y2="18" />
-        </svg>
+        </motion.svg>
       </motion.button>
 
       <AboutCard />
