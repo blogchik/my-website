@@ -9,6 +9,13 @@ export const metadata: Metadata = {
   title: "Jabborov Abduroziq",
   description:
     "Developer and designer passionate about building meaningful digital experiences.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
 }
 
 const fontSans = Bricolage_Grotesque({
