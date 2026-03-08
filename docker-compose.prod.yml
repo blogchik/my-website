@@ -11,16 +11,6 @@
 #   4. Run: make ssl-init
 
 services:
-  frontend:
-    build:
-      target: runner
-    ports:
-      # Bind only to localhost — Nginx is the public face on 80/443
-      - "127.0.0.1:3000:3000"
-    env_file:
-      - .env.prod
-    restart: unless-stopped
-
   backend:
     build:
       target: runner
@@ -63,7 +53,6 @@ services:
     networks:
       - app-network
     depends_on:
-      - frontend
       - backend
       - admin
     restart: unless-stopped

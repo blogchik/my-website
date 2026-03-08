@@ -6,7 +6,7 @@
 # automatically every 12 hours.
 #
 # Prerequisites:
-#   - DNS A records for DOMAIN, www.DOMAIN, api.DOMAIN, admin.DOMAIN pointing to this VPS
+#   - DNS A records for api.DOMAIN and admin.DOMAIN pointing to this VPS
 #   - Ports 80 and 443 open in the VPS firewall
 #   - Docker and docker compose installed
 #   - .env.prod exists at repo root with DOMAIN= and CERTBOT_EMAIL= set
@@ -42,16 +42,16 @@ echo "  Email  : $EMAIL"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# ── Build the frontend image first ──────────────────────────────────────────
+# ── Build images ────────────────────────────────────────────────────────────
 echo ">> Building production images..."
-$COMPOSE build frontend
+$COMPOSE build backend admin
 
 # ── Start nginx (needed to serve the ACME HTTP challenge on port 80) ────────
 # nginx will log an error about missing SSL cert for the HTTPS block,
 # but the HTTP block still starts and handles the ACME challenge correctly.
 echo ""
 echo ">> Starting nginx (HTTP only for ACME challenge)..."
-$COMPOSE up -d nginx frontend
+$COMPOSE up -d nginx
 
 echo ">> Waiting for nginx to be ready..."
 sleep 5
@@ -65,8 +65,6 @@ $COMPOSE run --rm --no-deps certbot certonly \
     --email "$EMAIL" \
     --agree-tos \
     --no-eff-email \
-    -d "$DOMAIN" \
-    -d "www.$DOMAIN" \
     -d "api.$DOMAIN" \
     -d "admin.$DOMAIN"
 

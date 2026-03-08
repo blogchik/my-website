@@ -8,7 +8,7 @@ PROD_COMPOSE := docker compose -f docker-compose.yml -f docker-compose.prod.yml
 
 # ── Development ─────────────────────────────────────────────────────────────
 
-dev:           ## Start dev environment (hot reload on :3000)
+dev:           ## Start dev environment
 	docker compose up
 
 dev-build:     ## Rebuild dev image and start
@@ -34,7 +34,7 @@ prod-down:     ## Stop production environment
 prod-logs:     ## Tail production logs
 	$(PROD_COMPOSE) logs -f
 
-prod-restart:  ## Restart a single service: make prod-restart s=frontend
+prod-restart:  ## Restart a single service: make prod-restart s=backend
 	$(PROD_COMPOSE) restart $(s)
 
 # ── SSL ─────────────────────────────────────────────────────────────────────

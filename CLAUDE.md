@@ -14,13 +14,9 @@ my-website/
 ├── Makefile                     ← convenience commands
 ├── nginx/
 │   ├── nginx.conf
-│   └── conf.d/app.conf          ← HTTP→HTTPS redirect, proxy frontend + api subdomain
+│   └── conf.d/app.conf          ← HTTP→HTTPS redirect, proxy api + admin subdomains
 ├── scripts/
 │   └── init-letsencrypt.sh      ← one-time SSL cert setup (run on VPS)
-├── frontend/                    ← Next.js personal website
-│   ├── Dockerfile               ← multi-stage: development / deps / builder / runner
-│   ├── src/
-│   └── public/
 ├── backend/                     ← FastAPI REST API
 │   ├── Dockerfile               ← multi-stage: development / deps / runner
 │   ├── pyproject.toml           ← uv project config + dependencies
@@ -40,7 +36,7 @@ my-website/
 
 | Command | Description |
 |---------|-------------|
-| `make dev` | Start dev environment (hot reload on :3000) |
+| `make dev` | Start dev environment |
 | `make dev-build` | Rebuild dev image and start |
 | `make dev-down` | Stop dev environment |
 | `make dev-logs` | Tail dev logs |
@@ -48,7 +44,7 @@ my-website/
 | `make prod-build` | Rebuild prod images and start |
 | `make prod-down` | Stop production |
 | `make prod-logs` | Tail prod logs |
-| `make prod-restart s=frontend` | Restart a single service |
+| `make prod-restart s=backend` | Restart a single service |
 | `make ssl-init` | Obtain first Let's Encrypt cert (run once on VPS) |
 | `make ssl-renew` | Force immediate cert renewal |
 | `make db-migrate` | Run pending Alembic migrations |
@@ -67,14 +63,6 @@ docker compose up
 # Prod
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
-
-### Frontend (`cd frontend/`)
-
-- **Dev server:** `pnpm dev`
-- **Build:** `pnpm build`
-- **Lint:** `pnpm lint`
-
-No test framework is configured.
 
 ### Admin (`cd admin/`)
 
@@ -99,15 +87,14 @@ Package manager: **uv**
 ### Development
 
 - Dockerfile stage: `development`
-- Source code bind-mounted into container (`./frontend/src`, `./frontend/public`)
+- Source code bind-mounted into container
 - `node_modules` isolated inside container via anonymous volume
 - `WATCHPACK_POLLING=true` for reliable hot reload on Linux
 - Env vars from `.env.dev` (committed to git, no secrets)
 
 ### Production
 
-- Dockerfile stage: `runner` (standalone Next.js output)
-- Frontend binds only to `127.0.0.1:3000` — not publicly reachable
+- Dockerfile stage: `runner` (standalone Next.js output for admin)
 - Nginx reverse proxy on ports 80/443
 - Let's Encrypt SSL via Certbot (auto-renewal loop every 12h)
 - Env vars from `.env.prod` (gitignored, lives only on VPS)
@@ -117,20 +104,18 @@ Package manager: **uv**
 CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then triggers Dokploy webhooks.
 
 **Architecture:**
-- **Frontend app** → `ghcr.io/<owner>/my-website-frontend` → Dokploy application
 - **Admin app** → `ghcr.io/<owner>/my-website-admin` → Dokploy application
 - **Backend app** → `ghcr.io/<owner>/my-website-backend` → Dokploy application
 - **PostgreSQL** → Dokploy built-in database service
 - Traefik (Dokploy) handles SSL + routing
 
-**CI/CD flow:** `push to main` → lint all three → security scan → build & push images → trigger Dokploy webhooks
+**CI/CD flow:** `push to main` → lint admin + backend → security scan → build & push images → trigger Dokploy webhooks
 
 **GitHub Secrets required:**
 
 | Secret | Description |
 |--------|-------------|
 | `ENV_PROD` | Full `.env.prod` contents (backend env vars included) |
-| `DOKPLOY_WEBHOOK_FRONTEND` | Dokploy webhook URL for frontend app |
 | `DOKPLOY_WEBHOOK_ADMIN` | Dokploy webhook URL for admin app |
 | `DOKPLOY_WEBHOOK_BACKEND` | Dokploy webhook URL for backend app |
 
@@ -146,14 +131,15 @@ CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then tr
 | `CONTACT_EMAIL_TO` | `hello@abduroziq.uz` |
 | `CONTACT_EMAIL_FROM` | `noreply@abduroziq.uz` |
 
-**Frontend env vars (build args via `ENV_PROD` secret):**
+**Admin env vars (build args via `ENV_PROD` secret):**
 
 | Variable | Example |
-|----------|---------|
-| `NEXT_PUBLIC_SITE_URL` | `https://abduroziq.uz` |
+|----------|--------|
 | `NEXT_PUBLIC_API_URL` | `https://api.abduroziq.uz` |
+| `NEXT_PUBLIC_ADMIN_URL` | `https://admin.abduroziq.uz` |
+| `NEXT_PUBLIC_GITHUB_CLIENT_ID` | `Ov23li...` |
 
-**Frontend → Backend:** Client-side `fetch()` calls `NEXT_PUBLIC_API_URL` directly (baked at build time). No server-side proxy. CORS on the backend allows the frontend origin.
+**Admin → Backend:** Client-side `fetch()` calls `NEXT_PUBLIC_API_URL` directly (baked at build time). No server-side proxy. CORS on the backend allows the admin origin.
 
 **Backend domain:** Dokploy routes `api.abduroziq.uz` → backend container via Traefik. Add `api.abduroziq.uz` as the domain in Dokploy backend app settings.
 
@@ -164,127 +150,6 @@ CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then tr
 3. Ensure DNS A records for both `yourdomain.com` and `api.yourdomain.com` → VPS IP, ports 80 and 443 open
 4. Run `make ssl-init` — obtains first certificate (must cover both domains)
 5. Run `make prod` — starts all services
-
-## Frontend architecture
-
-Personal portfolio for Jabborov Abduroziq. Built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind CSS v4.
-
-- `frontend/src/app/` — App Router pages: home, `/about`, `/blog`, `/contact`, `/projects`, `/tools`
-- `frontend/src/app/tools/` — Tools Hub listing page + individual tool pages (`/tools/[slug]`)
-- `frontend/src/components/` — Shared components (header, footer, globe, custom-cursor, navigation-menu, project-card, contact-form, tool-card)
-- `frontend/src/components/icons/` — SVG icon components
-- `frontend/src/lib/constants.ts` — Social links
-- `frontend/src/lib/tools.ts` — Tools registry (data, types, `toolsByCategory()` helper)
-- `frontend/src/app/opengraph-image.tsx` — Dynamic OG image via `next/og`
-- `frontend/src/app/globals.css` — Tailwind v4 `@theme` with custom colors and animations
-
-### Design system
-
-- **Font:** IBM Plex Mono (monospace throughout)
-- **Colors:** `--color-navy` (#000022), `--color-orange` (#E28413), `--color-white` (#ffffff) — defined as Tailwind theme tokens in `globals.css`
-- **Animations:** `fade-up`, `fade-in`, `scale-in`, `slide-right` exposed as `animate-*` Tailwind utilities
-- **Custom cursor:** Dot + ring cursor via JS (`custom-cursor.tsx`) + CSS; hidden on touch devices
-
-### Import alias
-
-`@/` maps to `frontend/src/` (configured in `frontend/tsconfig.json`).
-
-### Environment variables
-
-**Strict rule:** All env vars live in root `.env.dev` (dev) or `.env.prod` (prod) only. Never create `.env` files inside `frontend/`, `backend/`, or any other service directory. Docker Compose passes them via `env_file` in the compose files. See `.env.example` for all available variables.
-
-- `.env.dev` — committed to git, safe defaults, no secrets
-- `.env.prod` — gitignored, lives only on VPS, contains real secrets
-- `.env.example` — template documenting all variables
-
-### Deployment
-
-`frontend/next.config.ts` sets `output: "standalone"`. Docker uses multi-stage build (Node 22 Alpine). The Dockerfile has four stages:
-
-- `development` — hot reload dev (used by `docker-compose.override.yml`)
-- `deps` — installs all dependencies
-- `builder` — runs `pnpm build`
-- `runner` — production image (used by `docker-compose.prod.yml`)
-
-Site URL from `NEXT_PUBLIC_SITE_URL` env var.
-
-### Key dependencies
-
-- `cobe` — WebGL globe on the homepage
-- Package manager: **pnpm**
-
-## Tools Hub architecture
-
-A collection of free, browser-based developer utilities living under `/tools`. Each tool has its own playground page at `/tools/[slug]`.
-
-### Adding a new tool
-
-1. **Register** the tool in `frontend/src/lib/tools.ts` — add an entry to the `tools` array. If the tool belongs to a new category, add the category to the `categories` tuple first.
-2. **Create the page** at `frontend/src/app/tools/<slug>/page.tsx` (server component with metadata) and a companion client component for the interactive playground.
-3. Optionally add a **21 : 9 banner image** to `frontend/public/tools/<slug>/banner.webp` and set the `banner` field.
-
-### Common fields per tool
-
-Every tool entry in the registry has:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `slug` | `string` | URL segment (`/tools/<slug>`) |
-| `name` | `string` | Display name on card & page |
-| `description` | `string` | Short one-liner for the card |
-| `icon` | `string` | Emoji shown when no banner exists |
-| `category` | `Category` | Grouping key (e.g. "Generators") |
-| `banner` | `string \| null` | Path to 21 : 9 banner image in `/public` |
-| `seo.title` | `string` | Custom `<title>` optimised for search (~60 chars) |
-| `seo.description` | `string` | Meta description optimised for CTR (150-160 chars) |
-| `seo.keywords` | `string[]` | Relevant search terms for the tool |
-| `seo.canonical` | `string?` | Override canonical URL (defaults to `/tools/<slug>`) |
-
-Each tool page also includes **JSON-LD structured data** (`WebApplication` schema) for rich search results.
-
-### Tool playground conventions
-
-Each tool page consists of **common sections** (present on every tool) plus **tool-specific playground controls**:
-
-**Common sections:**
-- Breadcrumb navigation (Tools Hub → Tool Name)
-- Title, description
-- Banner image area (21 : 9 aspect ratio)
-
-**Tool-specific playground (varies per tool):**
-- Interactive controls (inputs, selects, buttons)
-- Result area with one-click copy
-- Recent results history (persisted via cookie)
-- Structural / educational info about the tool's domain
-- "Where is this useful" quick reference
-
-### Current tools
-
-33 tools across 8 categories (see full list in `frontend/src/lib/tools.ts`):
-
-| Category | Tools |
-|----------|-------|
-| Generators | UUID, Password, Hash, Lorem Ipsum, Slug, NanoID |
-| Text Processing | JSON Formatter, Base64, Character Counter, XML Formatter, Diff Checker, Case Converter, Regex Tester, Markdown Previewer |
-| Encoders / Decoders | JWT Decoder, URL Encoder / Decoder |
-| Converters | JSON ↔ YAML, Timestamp, JSON ↔ CSV |
-| Web & API | Query String Parser, HTTP Status Codes, Curl Builder, Webhook Tester, API Playground, Open Graph Preview, Robots.txt Validator |
-| CSS & Design | Color Converter, CSS Shadow Generator |
-| Media | Image Compressor |
-| DevOps | Cron Expression Helper, Date & Timezone Helper, Tech Stack Snippets, LLM Pricing Compare |
-
-### Files
-
-```
-frontend/src/
-├── lib/tools.ts              ← tool registry & types (Category, Tool, tools[], toolsByCategory())
-├── components/tool-card.tsx  ← card shown on /tools listing
-└── app/tools/
-    ├── page.tsx              ← /tools listing (server component)
-    └── [slug]/
-        ├── page.tsx          ← metadata + layout (server component)
-        └── *-playground.tsx  ← interactive client component
-```
 
 ## Backend architecture
 
@@ -321,7 +186,7 @@ All endpoints are served from `api.abduroziq.uz` (production) or `localhost:4000
 
 ### Security
 
-- **CORS:** `CORS_ORIGIN` (frontend) + `ADMIN_CORS_ORIGIN` (admin panel) allowed
+- **CORS:** `CORS_ORIGIN` + `ADMIN_CORS_ORIGIN` (admin panel) allowed
 - **Rate limiting:** Global 100 req/15min; contact endpoint 5 req/hour per IP
 - **Admin auth:** GitHub OAuth → JWT (HS256). Only `ADMIN_GITHUB_ID` allowed. Access token (15min) + HttpOnly refresh cookie (7d)
 - **Trusted hosts:** `API_DOMAIN` enforced via `TrustedHostMiddleware` in production
@@ -366,10 +231,10 @@ Admin panel for abduroziq.uz. Built with Next.js 16 (App Router), React 19, Type
 
 1. User clicks "Sign in with GitHub" → redirects to GitHub OAuth
 2. GitHub redirects to `/callback` with code
-3. Frontend sends code to `POST /admin/auth/github/callback`
+3. Admin panel sends code to `POST /admin/auth/github/callback`
 4. Backend validates GitHub user ID matches `ADMIN_GITHUB_ID`
 5. Backend issues JWT access token (response body) + refresh token (HttpOnly cookie)
-6. Frontend stores access token in `sessionStorage`
+6. Admin panel stores access token in `sessionStorage`
 
 ### Design
 
@@ -379,7 +244,7 @@ Admin panel for abduroziq.uz. Built with Next.js 16 (App Router), React 19, Type
 
 ### Deployment
 
-Same pattern as frontend: Next.js standalone output, multi-stage Docker build, port 3001.
+Next.js standalone output, multi-stage Docker build, port 3001.
 Accessed via `admin.abduroziq.uz` (Dokploy/Traefik routes to admin container).
 
 ### Import alias
@@ -388,4 +253,4 @@ Accessed via `admin.abduroziq.uz` (Dokploy/Traefik routes to admin container).
 
 ### Key dependencies
 
-Same as frontend: Next.js 16, React 19, Tailwind v4. Package manager: **pnpm**
+Next.js 16, React 19, Tailwind v4. Package manager: **pnpm**
