@@ -6,7 +6,7 @@
 # automatically every 12 hours.
 #
 # Prerequisites:
-#   - DNS A records for api.DOMAIN and admin.DOMAIN pointing to this VPS
+#   - DNS A records for DOMAIN, www.DOMAIN, and api.DOMAIN pointing to this VPS
 #   - Ports 80 and 443 open in the VPS firewall
 #   - Docker and docker compose installed
 #   - .env.prod exists at repo root with DOMAIN= and CERTBOT_EMAIL= set
@@ -44,7 +44,7 @@ echo ""
 
 # ── Build images ────────────────────────────────────────────────────────────
 echo ">> Building production images..."
-$COMPOSE build backend admin
+$COMPOSE build frontend backend
 
 # ── Start nginx (needed to serve the ACME HTTP challenge on port 80) ────────
 # nginx will log an error about missing SSL cert for the HTTPS block,
@@ -65,8 +65,9 @@ $COMPOSE run --rm --no-deps certbot certonly \
     --email "$EMAIL" \
     --agree-tos \
     --no-eff-email \
-    -d "api.$DOMAIN" \
-    -d "admin.$DOMAIN"
+    -d "$DOMAIN" \
+    -d "www.$DOMAIN" \
+    -d "api.$DOMAIN"
 
 echo ""
 echo ">> Certificate obtained! Reloading nginx with full HTTPS config..."

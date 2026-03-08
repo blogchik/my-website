@@ -1,8 +1,8 @@
 # abduroziq.uz
 
-Personal website with a FastAPI backend and a private admin panel — monorepo managed with Docker Compose and deployed via Dokploy.
+Personal website with a FastAPI backend — monorepo managed with Docker Compose and deployed via Dokploy.
 
-**API:** [api.abduroziq.uz](https://api.abduroziq.uz) · **Admin:** [admin.abduroziq.uz](https://admin.abduroziq.uz)
+**API:** [api.abduroziq.uz](https://api.abduroziq.uz)
 
 ---
 
@@ -10,7 +10,7 @@ Personal website with a FastAPI backend and a private admin panel — monorepo m
 
 | Layer | Technology |
 |-------|------------|
-| Admin panel | Next.js 16, React 19, TypeScript, Tailwind CSS v4 |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS v4, ShadCN UI |
 | Backend | Python 3.12, FastAPI, SQLAlchemy (async), Alembic |
 | Database | PostgreSQL 18 |
 | Email | Resend |
@@ -31,8 +31,8 @@ my-website/
 ├── Makefile                     ← convenience commands
 ├── .env.dev                     ← dev env vars (committed, no secrets)
 ├── .env.example                 ← template for .env.prod
-├── nginx/conf.d/app.conf        ← HTTP→HTTPS, routing for all subdomains
-├── admin/                       ← Next.js admin panel (port 3001)
+├── nginx/conf.d/app.conf        ← HTTP→HTTPS, routing for subdomains
+├── frontend/                    ← Next.js public website (port 3000)
 └── backend/                     ← FastAPI REST API (port 4000)
 ```
 
@@ -57,7 +57,7 @@ Services:
 
 | Service | URL |
 |---------|-----|
-| Admin panel | http://localhost:3001 |
+| Frontend | http://localhost:3000 |
 | Backend API | http://localhost:4000 |
 | API Docs (dev only) | http://localhost:4000/docs |
 | PostgreSQL | localhost:5432 |
@@ -76,7 +76,6 @@ make db-migrate   # Run pending Alembic migrations
 make db-revision m="description"  # Create new migration
 make db-shell     # Open PostgreSQL shell
 make backend-logs # Tail backend logs
-make admin-logs   # Tail admin panel logs
 
 make help         # List all available commands
 ```
@@ -115,7 +114,7 @@ Rate limits: 100 req/15min global · 5/hour for `/contact` · 10/hour for OAuth 
 
 ## Environment variables
 
-All variables live in the root `.env.dev` (dev) or `.env.prod` (prod). **Never** create `.env` files inside `admin/` or `backend/`.
+All variables live in the root `.env.dev` (dev) or `.env.prod` (prod). **Never** create `.env` files inside `frontend/` or `backend/`.
 
 ```bash
 cp .env.example .env.prod
@@ -126,8 +125,7 @@ Key variables:
 
 | Variable | Description |
 |----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Backend API URL (baked into admin at build time) |
-| `NEXT_PUBLIC_ADMIN_URL` | Admin panel public URL |
+| `NEXT_PUBLIC_API_URL` | Backend API URL (baked into frontend at build time) |
 | `DATABASE_URL` | PostgreSQL async connection string |
 | `CORS_ORIGIN` | Allowed origin for backend CORS |
 | `ADMIN_CORS_ORIGIN` | Allowed admin origin for backend CORS |
@@ -137,7 +135,6 @@ Key variables:
 | `GITHUB_CLIENT_ID` | GitHub OAuth App client ID (backend) |
 | `GITHUB_CLIENT_SECRET` | GitHub OAuth App client secret (backend) |
 | `ADMIN_GITHUB_ID` | GitHub user ID of the authorized admin |
-| `NEXT_PUBLIC_GITHUB_CLIENT_ID` | GitHub OAuth App client ID (admin panel) |
 | `JWT_SECRET` | HS256 signing key — generate with `openssl rand -hex 64` |
 | `JWT_ACCESS_EXPIRE_MINUTES` | Access token lifetime (default: 15) |
 | `JWT_REFRESH_EXPIRE_DAYS` | Refresh token lifetime (default: 7) |
@@ -148,26 +145,26 @@ Key variables:
 
 CI/CD pipeline on every push to `main`:
 
-1. **Lint** — admin ESLint + tsc, backend ruff — in parallel
+1. **Lint** — frontend ESLint + tsc, backend ruff — in parallel
 2. **Security scan** — Trivy vulnerability scanner
-3. **Build & push** — Docker images to `ghcr.io/blogchik/my-website-{admin,backend}`
-4. **Deploy** — backend deployed first, health-checked, then admin
+3. **Build & push** — Docker images to `ghcr.io/blogchik/my-website-{frontend,backend}`
+4. **Deploy** — frontend and backend deployed, backend health-checked
 
 ### Required GitHub Secrets
 
 | Secret | Description |
 |--------|-------------|
 | `ENV_PROD` | Full `.env.prod` contents |
-| `DOKPLOY_WEBHOOK_ADMIN` | Dokploy webhook URL for admin panel |
+| `DOKPLOY_WEBHOOK_FRONTEND` | Dokploy webhook URL for frontend |
 | `DOKPLOY_WEBHOOK_BACKEND` | Dokploy webhook URL for backend |
 
 ### Dokploy setup
 
 1. Create two applications in Dokploy:
-   - **Admin** → image `ghcr.io/blogchik/my-website-admin:main`, domain `admin.abduroziq.uz`
+   - **Frontend** → image `ghcr.io/blogchik/my-website-frontend:main`, domain `abduroziq.uz`
    - **Backend** → image `ghcr.io/blogchik/my-website-backend:main`, domain `api.abduroziq.uz`, port `4000`
 2. Add backend environment variables in the Dokploy **Environment** tab
-3. Add DNS A records: `admin.abduroziq.uz`, `api.abduroziq.uz` → VPS IP
+3. Add DNS A records: `abduroziq.uz`, `api.abduroziq.uz` → VPS IP
 4. Push to `main` — GitHub Actions builds and deploys automatically
 
 ---

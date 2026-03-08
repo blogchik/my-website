@@ -3,7 +3,7 @@ PROD_COMPOSE := docker compose -f docker-compose.yml -f docker-compose.prod.yml
 .PHONY: dev dev-build dev-down dev-logs \
         prod prod-build prod-down prod-logs prod-restart \
         ssl-init ssl-renew \
-        db-migrate db-revision db-shell backend-logs admin-logs \
+        db-migrate db-revision db-shell frontend-logs backend-logs \
         help
 
 # ── Development ─────────────────────────────────────────────────────────────
@@ -57,11 +57,11 @@ db-revision:   ## Create new migration: make db-revision m="add users table"
 db-shell:      ## Open PostgreSQL shell
 	docker compose exec db psql -U dev -d mywebsite
 
+frontend-logs: ## Tail frontend logs
+	docker compose logs -f frontend
+
 backend-logs:  ## Tail backend logs
 	docker compose logs -f backend
-
-admin-logs:    ## Tail admin panel logs
-	docker compose logs -f admin
 
 # ── Help ────────────────────────────────────────────────────────────────────
 

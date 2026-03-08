@@ -10,6 +10,22 @@
 #   - WATCHPACK_POLLING=true for reliable file watching on Linux bind mounts
 
 services:
+  frontend:
+    build:
+      target: development
+    command: pnpm dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.dev
+    environment:
+      - WATCHPACK_POLLING=true
+    restart: "no"
+
   backend:
     build:
       target: development
@@ -25,22 +41,6 @@ services:
       - "4000:4000"
     env_file:
       - .env.dev
-    restart: "no"
-
-  admin:
-    build:
-      target: development
-    command: pnpm dev
-    volumes:
-      - ./admin:/app
-      - /app/node_modules
-      - /app/.next
-    ports:
-      - "3001:3001"
-    env_file:
-      - .env.dev
-    environment:
-      - WATCHPACK_POLLING=true
     restart: "no"
 
   db:

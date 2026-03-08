@@ -14,19 +14,22 @@ my-website/
 ├── Makefile                     ← convenience commands
 ├── nginx/
 │   ├── nginx.conf
-│   └── conf.d/app.conf          ← HTTP→HTTPS redirect, proxy api + admin subdomains
+│   └── conf.d/app.conf          ← HTTP→HTTPS redirect, proxy main + api
 ├── scripts/
 │   └── init-letsencrypt.sh      ← one-time SSL cert setup (run on VPS)
+├── frontend/                    ← Next.js public website (ShadCN UI, RTL)
+│   ├── Dockerfile               ← multi-stage: development / deps / builder / runner
+│   ├── components.json          ← ShadCN UI configuration
+│   ├── app/                     ← App Router pages
+│   ├── components/              ← UI components (ShadCN + custom)
+│   ├── lib/                     ← Utilities (cn, etc.)
+│   └── public/
 ├── backend/                     ← FastAPI REST API
 │   ├── Dockerfile               ← multi-stage: development / deps / runner
 │   ├── pyproject.toml           ← uv project config + dependencies
 │   ├── alembic.ini              ← Alembic migration config
 │   ├── alembic/                 ← migration scripts
 │   └── src/app/                 ← FastAPI application code
-├── admin/                       ← Next.js admin panel (GitHub OAuth)
-│   ├── Dockerfile               ← multi-stage: development / deps / builder / runner
-│   ├── src/
-│   └── public/
 └── (future services)
 ```
 
@@ -50,8 +53,8 @@ my-website/
 | `make db-migrate` | Run pending Alembic migrations |
 | `make db-revision m="..."` | Create new Alembic migration |
 | `make db-shell` | Open PostgreSQL shell |
+| `make frontend-logs` | Tail frontend logs |
 | `make backend-logs` | Tail backend logs |
-| `make admin-logs` | Tail admin panel logs |
 | `make help` | List all commands |
 
 Without Makefile:
@@ -64,11 +67,12 @@ docker compose up
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-### Admin (`cd admin/`)
+### Frontend (`cd frontend/`)
 
-- **Dev server:** `pnpm dev` (port 3001)
+- **Dev server:** `pnpm dev` (port 3000)
 - **Build:** `pnpm build`
 - **Lint:** `pnpm lint`
+- **Type check:** `pnpm type-check`
 
 Package manager: **pnpm**
 
@@ -94,7 +98,7 @@ Package manager: **uv**
 
 ### Production
 
-- Dockerfile stage: `runner` (standalone Next.js output for admin)
+- Dockerfile stage: `runner` (standalone Next.js output)
 - Nginx reverse proxy on ports 80/443
 - Let's Encrypt SSL via Certbot (auto-renewal loop every 12h)
 - Env vars from `.env.prod` (gitignored, lives only on VPS)
@@ -104,19 +108,19 @@ Package manager: **uv**
 CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then triggers Dokploy webhooks.
 
 **Architecture:**
-- **Admin app** → `ghcr.io/<owner>/my-website-admin` → Dokploy application
+- **Frontend app** → `ghcr.io/<owner>/my-website-frontend` → Dokploy application
 - **Backend app** → `ghcr.io/<owner>/my-website-backend` → Dokploy application
 - **PostgreSQL** → Dokploy built-in database service
 - Traefik (Dokploy) handles SSL + routing
 
-**CI/CD flow:** `push to main` → lint admin + backend → security scan → build & push images → trigger Dokploy webhooks
+**CI/CD flow:** `push to main` → lint frontend + backend → security scan → build & push images → trigger Dokploy webhooks
 
 **GitHub Secrets required:**
 
 | Secret | Description |
 |--------|-------------|
 | `ENV_PROD` | Full `.env.prod` contents (backend env vars included) |
-| `DOKPLOY_WEBHOOK_ADMIN` | Dokploy webhook URL for admin app |
+| `DOKPLOY_WEBHOOK_FRONTEND` | Dokploy webhook URL for frontend app |
 | `DOKPLOY_WEBHOOK_BACKEND` | Dokploy webhook URL for backend app |
 
 **Backend env vars in Dokploy (Environment tab):**
@@ -131,24 +135,14 @@ CI/CD pipeline (GitHub Actions) builds Docker images and pushes to GHCR, then tr
 | `CONTACT_EMAIL_TO` | `hello@abduroziq.uz` |
 | `CONTACT_EMAIL_FROM` | `noreply@abduroziq.uz` |
 
-**Admin env vars (build args via `ENV_PROD` secret):**
-
-| Variable | Example |
-|----------|--------|
-| `NEXT_PUBLIC_API_URL` | `https://api.abduroziq.uz` |
-| `NEXT_PUBLIC_ADMIN_URL` | `https://admin.abduroziq.uz` |
-| `NEXT_PUBLIC_GITHUB_CLIENT_ID` | `Ov23li...` |
-
-**Admin → Backend:** Client-side `fetch()` calls `NEXT_PUBLIC_API_URL` directly (baked at build time). No server-side proxy. CORS on the backend allows the admin origin.
-
 **Backend domain:** Dokploy routes `api.abduroziq.uz` → backend container via Traefik. Add `api.abduroziq.uz` as the domain in Dokploy backend app settings.
 
 ### First-time VPS setup (Docker Compose — alternative to Dokploy)
 
 1. Fill in `.env.prod` (copy from `.env.example`, set `DOMAIN`, `CERTBOT_EMAIL`, etc.)
 2. Replace `yourdomain.com` in `nginx/conf.d/app.conf` with actual domain
-3. Ensure DNS A records for both `yourdomain.com` and `api.yourdomain.com` → VPS IP, ports 80 and 443 open
-4. Run `make ssl-init` — obtains first certificate (must cover both domains)
+3. Ensure DNS A records for `yourdomain.com`, `www.yourdomain.com`, and `api.yourdomain.com` → VPS IP, ports 80 and 443 open
+4. Run `make ssl-init` — obtains first certificate (must cover all domains)
 5. Run `make prod` — starts all services
 
 ## Backend architecture
@@ -218,39 +212,24 @@ Backend port: 4000 (internal). Accessed via `api.abduroziq.uz` subdomain (Traefi
 - `httpx` — GitHub OAuth HTTP calls
 - Package manager: **uv**
 
-## Admin architecture
+## Frontend architecture
 
-Admin panel for abduroziq.uz. Built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind CSS v4. Dark theme (navy bg).
+Public-facing website at abduroziq.uz. Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, and ShadCN UI with RTL support.
 
-- `admin/src/app/` — App Router pages: login, callback, dashboard, contacts
-- `admin/src/components/` — Shared components (sidebar, status-badge, pagination, loading-skeleton)
-- `admin/src/lib/auth.ts` — GitHub OAuth helpers, token management (sessionStorage)
-- `admin/src/lib/api.ts` — API client with auto token refresh on 401
-
-### Auth flow
-
-1. User clicks "Sign in with GitHub" → redirects to GitHub OAuth
-2. GitHub redirects to `/callback` with code
-3. Admin panel sends code to `POST /admin/auth/github/callback`
-4. Backend validates GitHub user ID matches `ADMIN_GITHUB_ID`
-5. Backend issues JWT access token (response body) + refresh token (HttpOnly cookie)
-6. Admin panel stores access token in `sessionStorage`
-
-### Design
-
-- **Dark theme:** navy (#000022) background, white text, orange (#E28413) accents
-- **Font:** IBM Plex Mono (monospace throughout)
-- **Animations:** fade-up, fade-in, scale-in, slide-right
+- `frontend/app/` — App Router pages
+- `frontend/components/ui/` — ShadCN UI components
+- `frontend/lib/utils.ts` — ShadCN `cn()` utility (clsx + tailwind-merge)
+- `frontend/components.json` — ShadCN configuration (radix-nova style, hugeicons)
 
 ### Deployment
 
-Next.js standalone output, multi-stage Docker build, port 3001.
-Accessed via `admin.abduroziq.uz` (Dokploy/Traefik routes to admin container).
+Next.js standalone output, multi-stage Docker build, port 3000.
+Served at `abduroziq.uz` (main domain). Nginx/Traefik routes main domain to frontend container.
 
 ### Import alias
 
-`@/` maps to `admin/src/` (configured in `admin/tsconfig.json`).
+`@/` maps to `frontend/` root (configured in `frontend/tsconfig.json`).
 
 ### Key dependencies
 
-Next.js 16, React 19, Tailwind v4. Package manager: **pnpm**
+Next.js 16, React 19, Tailwind v4, ShadCN UI, Radix UI. Package manager: **pnpm**

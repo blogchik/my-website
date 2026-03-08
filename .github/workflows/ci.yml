@@ -18,13 +18,13 @@ env:
   PYTHON_VERSION: "3.12"
 
 jobs:
-  # ── Admin: Lint & Build ────────────────────────────────────────────────
-  lint-admin:
-    name: "Admin: Lint & Build"
+  # ── Frontend: Lint & Build ──────────────────────────────────────────────
+  lint-frontend:
+    name: "Frontend: Lint & Build"
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: admin
+        working-directory: frontend
 
     steps:
       - uses: actions/checkout@v4
@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
-          cache-dependency-path: admin/pnpm-lock.yaml
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -89,7 +89,7 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
-    needs: [lint-admin, lint-backend]
+    needs: [lint-frontend, lint-backend]
     permissions:
       actions: read
       contents: read
@@ -114,10 +114,10 @@ jobs:
           sarif_file: "trivy-results.sarif"
         continue-on-error: true
 
-  # ── Build & Push Admin Image ────────────────────────────────────────────
-  build-admin:
-    name: "Build & Push: Admin"
-    needs: [lint-admin, security]
+  # ── Build & Push Frontend Image ──────────────────────────────────────────
+  build-frontend:
+    name: "Build & Push: Frontend"
+    needs: [lint-frontend, security]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     permissions:
@@ -146,7 +146,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-admin
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -156,18 +156,16 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./admin
+          context: ./frontend
           target: runner
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=admin
-          cache-to: type=gha,mode=max,scope=admin
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
           platforms: linux/amd64
           build-args: |
             NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}
-            NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ env.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
-            NEXT_PUBLIC_ADMIN_URL=${{ env.NEXT_PUBLIC_ADMIN_URL }}
 
   # ── Build & Push Backend Image ───────────────────────────────────────────
   build-backend:
@@ -218,7 +216,7 @@ jobs:
   # ── Deploy ───────────────────────────────────────────────────────────────
   deploy:
     name: Deploy to Dokploy
-    needs: [build-admin, build-backend]
+    needs: [build-frontend, build-backend]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment:
@@ -226,6 +224,9 @@ jobs:
       url: https://abduroziq.uz
 
     steps:
+      - name: Trigger Frontend deployment
+        run: curl -sf -X POST "${{ secrets.DOKPLOY_WEBHOOK_FRONTEND }}"
+
       - name: Trigger Backend deployment
         run: curl -sf -X POST "${{ secrets.DOKPLOY_WEBHOOK_BACKEND }}"
 
@@ -245,6 +246,3 @@ jobs:
             echo "Attempt $i failed, retrying in 15s..."
             sleep 15
           done
-
-      - name: Trigger Admin deployment
-        run: curl -sf -X POST "${{ secrets.DOKPLOY_WEBHOOK_ADMIN }}"

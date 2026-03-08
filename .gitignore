@@ -1,3 +1,10 @@
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
 # Admin
 admin/node_modules/
 admin/.next/
