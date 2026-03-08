@@ -1,8 +1,17 @@
 "use client"
 
-import { motion } from "motion/react"
+import {
+  Headphones,
+  HeadphoneMuteIcon,
+  Search01Icon,
+} from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { AnimatePresence, motion } from "motion/react"
+import { useSound } from "@/components/sound-provider"
 
 export function BottomDock() {
+  const { enabled, toggle, playClick } = useSound()
+
   return (
     <motion.div
       className="fixed bottom-8 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1"
@@ -10,61 +19,60 @@ export function BottomDock() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      {/* Music */}
+      {/* Sound toggle */}
       <motion.button
         type="button"
         className="flex h-[34px] w-[38px] items-center justify-center rounded-lg border border-border text-foreground transition-colors hover:text-primary"
-        aria-label="Music"
+        aria-label={enabled ? "Disable sound effects" : "Enable sound effects"}
+        onClick={toggle}
         whileHover="hover"
         whileTap="tap"
       >
-        <motion.svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        <motion.span
+          className="flex"
           variants={{
             hover: { y: -2 },
             tap: { scale: 0.85 },
           }}
           transition={{ type: "spring", stiffness: 400, damping: 15 }}
         >
-          <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-          <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-        </motion.svg>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={enabled ? "on" : "off"}
+              className="flex"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.15 }}
+            >
+              <HugeiconsIcon
+                icon={enabled ? Headphones : HeadphoneMuteIcon}
+                size={18}
+                strokeWidth={2}
+              />
+            </motion.span>
+          </AnimatePresence>
+        </motion.span>
       </motion.button>
 
       {/* Search / Command */}
       <motion.button
         type="button"
         className="flex h-[34px] items-center gap-1.5 rounded-lg border border-border px-2.5 text-foreground transition-colors hover:text-primary"
+        onClick={playClick}
         whileHover="hover"
         whileTap="tap"
       >
-        <motion.svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        <motion.span
+          className="flex"
           variants={{
             hover: { rotate: -15 },
             tap: { scale: 0.85 },
           }}
           transition={{ type: "spring", stiffness: 400, damping: 15 }}
         >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-        </motion.svg>
+          <HugeiconsIcon icon={Search01Icon} size={18} strokeWidth={2} />
+        </motion.span>
 
         {/* Desktop: keyboard shortcuts */}
         <span className="hidden items-center gap-1 sm:flex">

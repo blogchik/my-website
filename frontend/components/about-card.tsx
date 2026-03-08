@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react"
 import Image from "next/image"
 import Link from "next/link"
 import { Fragment, useState } from "react"
+import { useSound } from "@/components/sound-provider"
 
 const socials = [
   { label: "Email", href: "mailto:hello@abduroziq.uz" },
@@ -16,6 +17,7 @@ const ease = [0.25, 0.1, 0.25, 1] as const
 
 export function AboutCard() {
   const [avatarOpen, setAvatarOpen] = useState(false)
+  const { playClick } = useSound()
 
   return (
     <section className="w-full max-w-[400px]">
@@ -28,7 +30,7 @@ export function AboutCard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            onClick={() => setAvatarOpen(false)}
+            onClick={() => { playClick(); setAvatarOpen(false) }}
             onKeyDown={(e) => e.key === "Escape" && setAvatarOpen(false)}
             role="button"
             tabIndex={0}
@@ -60,7 +62,7 @@ export function AboutCard() {
       >
         <motion.button
           type="button"
-          onClick={() => setAvatarOpen(true)}
+          onClick={() => { playClick(); setAvatarOpen(true) }}
           className="h-[43px] w-[43px] shrink-0 cursor-pointer overflow-hidden rounded-full bg-muted"
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}

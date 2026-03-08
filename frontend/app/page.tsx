@@ -1,10 +1,15 @@
 "use client"
 
+import { Menu01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { motion } from "motion/react"
 import { AboutCard } from "@/components/about-card"
 import { BottomDock } from "@/components/bottom-dock"
+import { useSound } from "@/components/sound-provider"
 
 export default function Page() {
+  const { playClick } = useSound()
+
   return (
     <main className="flex min-h-svh items-center justify-center px-8">
       {/* Menu — desktop only */}
@@ -14,30 +19,21 @@ export default function Page() {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+        onClick={playClick}
         whileHover="hover"
         whileTap="tap"
       >
         Menu
-        <motion.svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        <motion.span
+          className="flex"
           variants={{
             hover: { rotate: 90 },
             tap: { scale: 0.85 },
           }}
           transition={{ type: "spring", stiffness: 300, damping: 15 }}
         >
-          <line x1="4" x2="20" y1="12" y2="12" />
-          <line x1="4" x2="20" y1="6" y2="6" />
-          <line x1="4" x2="20" y1="18" y2="18" />
-        </motion.svg>
+          <HugeiconsIcon icon={Menu01Icon} size={18} strokeWidth={2} />
+        </motion.span>
       </motion.button>
 
       <AboutCard />
