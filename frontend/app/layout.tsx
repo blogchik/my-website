@@ -10,11 +10,7 @@ export const metadata: Metadata = {
   description:
     "Developer and designer passionate about building meaningful digital experiences.",
   icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "32x32" },
-    ],
-    apple: "/apple-touch-icon.png",
+    icon: { url: "/favicon.svg", type: "image/svg+xml" },
   },
 }
 

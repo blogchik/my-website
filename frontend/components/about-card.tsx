@@ -1,5 +1,6 @@
 "use client"
 
+import { AnimatePresence, motion } from "motion/react"
 import Image from "next/image"
 import Link from "next/link"
 import { Fragment, useState } from "react"
@@ -11,36 +12,59 @@ const socials = [
   { label: "LinkedIn", href: "https://linkedin.com/in/jabborovabduroziq" },
 ]
 
+const ease = [0.25, 0.1, 0.25, 1] as const
+
 export function AboutCard() {
   const [avatarOpen, setAvatarOpen] = useState(false)
 
   return (
     <section className="w-full max-w-[400px]">
       {/* Avatar lightbox */}
-      {avatarOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-          onClick={() => setAvatarOpen(false)}
-          onKeyDown={(e) => e.key === "Escape" && setAvatarOpen(false)}
-          role="button"
-          tabIndex={0}
-        >
-          <Image
-            src="/avatar.jpg"
-            alt="Jabborov Abduroziq"
-            width={320}
-            height={320}
-            className="rounded-2xl object-cover"
-          />
-        </div>
-      )}
+      <AnimatePresence>
+        {avatarOpen && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setAvatarOpen(false)}
+            onKeyDown={(e) => e.key === "Escape" && setAvatarOpen(false)}
+            role="button"
+            tabIndex={0}
+          >
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              transition={{ duration: 0.25, ease }}
+            >
+              <Image
+                src="/avatar.jpg"
+                alt="Jabborov Abduroziq"
+                width={320}
+                height={320}
+                className="rounded-2xl object-cover"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Profile */}
-      <div className="flex items-center gap-4">
-        <button
+      <motion.div
+        className="flex items-center gap-4"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease }}
+      >
+        <motion.button
           type="button"
           onClick={() => setAvatarOpen(true)}
-          className="h-[43px] w-[43px] shrink-0 cursor-pointer overflow-hidden rounded-full bg-muted transition-opacity hover:opacity-80"
+          className="h-[43px] w-[43px] shrink-0 cursor-pointer overflow-hidden rounded-full bg-muted"
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
           <Image
             src="/avatar.jpg"
@@ -50,17 +74,22 @@ export function AboutCard() {
             className="h-full w-full object-cover"
             priority
           />
-        </button>
+        </motion.button>
         <div>
           <h1 className="text-m font-medium text-foreground">
             Jabborov Abduroziq
           </h1>
           <p className="text-xs text-muted-foreground">Think beyond limits.</p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Bio */}
-      <div className="mt-8 space-y-4 text-sm leading-relaxed text-muted-foreground">
+      <motion.div
+        className="mt-8 space-y-4 text-sm leading-relaxed text-muted-foreground"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15, ease }}
+      >
         <p>
           Hi, I&apos;m Abduroziq — a{" "}
           <strong className="font-semibold text-foreground">developer</strong>{" "}
@@ -78,24 +107,31 @@ export function AboutCard() {
           technologies, contributing to open-source projects, and sharing
           knowledge with the community.
         </p>
-      </div>
+      </motion.div>
 
       {/* Socials */}
-      <div className="mt-8 flex items-center gap-2 text-xs uppercase tracking-wider">
+      <motion.div
+        className="mt-8 flex items-center gap-2 text-xs uppercase tracking-wider"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3, ease }}
+      >
         {socials.map((social, i) => (
           <Fragment key={social.label}>
             {i > 0 && <span className="font-bold text-primary">/</span>}
-            <Link
-              href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-foreground transition-colors hover:text-primary"
-            >
-              {social.label}
-            </Link>
+            <motion.span whileHover={{ y: -1 }} transition={{ type: "spring", stiffness: 400, damping: 17 }}>
+              <Link
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground transition-colors hover:text-primary"
+              >
+                {social.label}
+              </Link>
+            </motion.span>
           </Fragment>
         ))}
-      </div>
+      </motion.div>
     </section>
   )
 }
